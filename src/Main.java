@@ -28,7 +28,6 @@ public class Main {
         //Creates customer list, note that some customers with different SLC have the same coordinates
         for (int i = 0; i < Customerlist.length; i++) {
             Customerlist[i] = new Customer(uniqueCust[i]);
-            String id = uniqueCust[i];
             for(Shipment ship : ShipList) {
                 if(Customerlist[i].getID().equals(ship.getSLC())) {
                     Customerlist[i].setLat(ship.getOriginLat());
