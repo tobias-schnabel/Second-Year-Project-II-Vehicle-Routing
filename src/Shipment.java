@@ -2,8 +2,9 @@ import java.time.*;
 import java.util.*;
 
 public class Shipment {
-
-    private final LocalDate PDate;
+    //Data has columns as follows:
+    //Date | Weight | Nb | Volume | OriginCLusterLat | OriginCLusterLong | OriginLat |OriginLong
+    private final Date PDate;
     private final double Weight;
 
     private final double OriginClusterLat;
@@ -35,5 +36,22 @@ public class Shipment {
 
     public LocalDate getPDate() {
         return PDate;
+    }
+    public double getWeight() { return Weight; }
+    public double getNb() { return Nb; }
+    public double getVolume() { return Volume; }
+
+    @Override
+    public String toString() {
+        return "Shipment{" +
+                "PDate=" + PDate +
+                ", Weight=" + Weight +
+                ", Nb=" + Nb +
+                ", Volume=" + Volume +
+                ", OriginClusterLat=" + OriginClusterLat +
+                ", OriginClusterLong=" + OriginClusterLong +
+                ", OriginLat=" + OriginLat +
+                ", OriginLong=" + OriginLong +
+                '}';
     }
 }
