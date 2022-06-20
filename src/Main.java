@@ -3,9 +3,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.nio.file.*;
-import java.time.*;
-
-import static java.sql.Date.valueOf;
 
 //Obbe Pulles and Tobias Schnabel
 public class Main {

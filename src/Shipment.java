@@ -41,11 +41,13 @@ public class Shipment {
     }
 
     public Date getPDate() {
-        return PDate;
+        return this.PDate;
     }
-    public double getWeight() { return Weight; }
-    public double getNb() { return Nb; }
-    public double getVolume() { return Volume; }
+    public double getWeight() { return this.Weight; }
+    public double getNb() { return this.Nb; }
+    public double getVolume() { return this.Volume; }
+    public double getOriginLat() {return this.OriginLat;}
+    public double getOriginLong() {return this.OriginLong;}
 
     @Override
     public String toString() {
