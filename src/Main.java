@@ -35,13 +35,20 @@ public class Main {
                     Customerlist[i].incrementNum();
                     break;
                 }
-
             }
         }
 
         for(Customer cust: Customerlist){
             System.out.println(cust);
         }
+
+        //TODO in no particular order
+        //1. Create distance/adjacency matrix
+        //2. Base case
+        //3. Pathfinding / minimum cost flow / packing of trucks
+        //4. Local Search / neighbouring optimization
+        //5. Sort shipments on date (array of shipments on a particular day, maybe arraylist of arraylist?)
+        //6. Cleanup
     }
 
     public static Shipment[] getInput(String filepath)
