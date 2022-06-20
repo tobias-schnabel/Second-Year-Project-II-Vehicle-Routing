@@ -6,14 +6,18 @@ public class Shipment {
     //Date | Weight | Nb | Volume | OriginCLusterLat | OriginCLusterLong | OriginLat |OriginLong
     private final Date PDate;
     private final double Weight;
-
+    private final double Nb;
+    private final double Volume;
     private final double OriginClusterLat;
     private final double OriginClusterLong;
     private final double OriginLat;
     private final double OriginLong;
 
-    public Shipment(LocalDate PUDate, double OClat, double OClong, double Olat, double Olong){
+    public Shipment(Date PUDate,double W, double Nb, double V, double OClat, double OClong, double Olat, double Olong){
        this.PDate = PUDate;
+       this.Weight = W;
+       this.Nb = Nb;
+       this.Volume = V;
        this.OriginClusterLat = OClat;
        this.OriginClusterLong = OClong;
        this.OriginLat = Olat;
@@ -34,7 +38,7 @@ public class Shipment {
 
     }
 
-    public LocalDate getPDate() {
+    public Date getPDate() {
         return PDate;
     }
     public double getWeight() { return Weight; }
