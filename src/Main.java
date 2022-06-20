@@ -8,6 +8,8 @@ import java.nio.file.*;
 public class Main {
 
     public static void main (String[] args) {
+
+        //reads shipment file
         Shipment[] ShipList = null;
         try{
             String filename = "Data.txt";
@@ -19,35 +21,39 @@ public class Main {
             e.printStackTrace();
         }
 
+
         String[] uniqueCust = Shipment.getUnique(ShipList);
 
         System.out.println("There are " + uniqueCust.length + " unique Customers plus 1 Cluster.");
 
-        Customer[] Customerlist = new Customer[uniqueCust.length];
+        Customer[] CustomerList = new Customer[uniqueCust.length];
 
         //Creates customer list, note that some customers with different SLC have the same coordinates
-        for (int i = 0; i < Customerlist.length; i++) {
-            Customerlist[i] = new Customer(uniqueCust[i]);
+        for (int i = 0; i < CustomerList.length; i++) {
+            CustomerList[i] = new Customer(uniqueCust[i]);
             for(Shipment ship : ShipList) {
-                if(Customerlist[i].getID().equals(ship.getSLC())) {
-                    Customerlist[i].setLat(ship.getOriginLat());
-                    Customerlist[i].setLon(ship.getOriginLong());
-                    Customerlist[i].incrementNum();
+                if(CustomerList[i].getID().equals(ship.getSLC())) {
+                    CustomerList[i].setLat(ship.getOriginLat());
+                    CustomerList[i].setLon(ship.getOriginLong());
+                    CustomerList[i].incrementNum();
                     break;
                 }
             }
         }
 
-        for(Customer cust: Customerlist){
-            System.out.println(cust);
-        }
+
+
+
+
+
+              
 
         //TODO in no particular order
         //1. Create distance/adjacency matrix
         //2. Base case
         //3. Pathfinding / minimum cost flow / packing of trucks
         //4. Local Search / neighbouring optimization
-        //5. Sort shipments on date (array of shipments on a particular day, maybe arraylist of arraylist?)
+        //5. Sort shipments on date (array of shipments on a particular day, maybe arraylist of arraylists?)
         //6. Cleanup
     }
 
@@ -67,7 +73,6 @@ public class Main {
 
         System.out.println("Input has " + n + " lines.");
 
-        Scanner input = new Scanner(System.in);
         Shipment[] shiplist = new Shipment[n];
 
         DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
