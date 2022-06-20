@@ -4,6 +4,8 @@ import java.util.*;
 public class Shipment {
 
     private final LocalDate PDate;
+    private final double Weight;
+
     private final double OriginClusterLat;
     private final double OriginClusterLong;
     private final double OriginLat;
