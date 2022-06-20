@@ -3,7 +3,7 @@ public class Customer {
     private  double lat;
     private  double lon;
 
-    private  String ID;
+    private final String ID;
 
     private int numShip = 0;
 
@@ -65,5 +65,9 @@ public class Customer {
                 ", ID = '" + ID + '\'' +
                 ", numShip = " + numShip +
                 '}';
+    }
+
+    public int getNumShip() {
+        return numShip;
     }
 } //close class

@@ -7,46 +7,23 @@ import java.nio.file.*;
 //Obbe Pulles and Tobias Schnabel
 public class Main {
 
+    private static int numLinesinInput = 0;
+
     public static void main (String[] args) {
 
         //reads shipment file
         Shipment[] ShipList = null;
         try{
             String filename = "Data.txt";
-
             ShipList = getInput(filename);
-            System.out.println("Import successful.\n");
         }
         catch (FileNotFoundException e){
             e.printStackTrace();
         }
 
+        Customer[] CustomerList = getCustomers(ShipList);
 
-        String[] uniqueCust = Shipment.getUnique(ShipList);
-
-        System.out.println("There are " + uniqueCust.length + " unique Customers plus 1 Cluster.");
-
-        Customer[] CustomerList = new Customer[uniqueCust.length];
-
-        //Creates customer list, note that some customers with different SLC have the same coordinates
-        for (int i = 0; i < CustomerList.length; i++) {
-            CustomerList[i] = new Customer(uniqueCust[i]);
-            for(Shipment ship : ShipList) {
-                if(CustomerList[i].getID().equals(ship.getSLC())) {
-                    CustomerList[i].setLat(ship.getOriginLat());
-                    CustomerList[i].setLon(ship.getOriginLong());
-                    CustomerList[i].incrementNum();
-                    break;
-                }
-            }
-        }
-
-
-
-
-
-
-              
+        verifyInput(ShipList, CustomerList);
 
         //TODO in no particular order
         //1. Create distance/adjacency matrix
@@ -57,23 +34,40 @@ public class Main {
         //6. Cleanup
     }
 
+    private static Customer[] getCustomers(Shipment[] ShipList) {
+        assert ShipList != null;
+        String[] uniqueCust = Shipment.getUnique(ShipList);
+        Customer[] CustomerList = new Customer[uniqueCust.length];
+
+        //Creates customer list, note that some customers with different SLC have the same coordinates
+        for (int i = 0; i < CustomerList.length; i++) {
+            CustomerList[i] = new Customer(uniqueCust[i]);
+            for(Shipment ship : ShipList) {
+                if(CustomerList[i].getID().equals(ship.getSLC())) {
+                    CustomerList[i].setLat(ship.getOriginLat());
+                    CustomerList[i].setLon(ship.getOriginLong());
+                    CustomerList[i].incrementNum();
+                } //if
+            } //inner for
+        } //outer for
+        return CustomerList;
+    }
+
     public static Shipment[] getInput(String filepath)
         throws java.io.FileNotFoundException {
         File file = new File(filepath);
         //get number of lines
-        int n = 0;
         try {
             Path file2 = Paths.get(filepath);
 
             long count = Files.lines(file2).count();
-            n = (int) count;
+            numLinesinInput = (int) count;
+            System.out.println("Import successful: "+ numLinesinInput + " lines.");
         } catch (Exception e) {
             e.getStackTrace();
         }
 
-        System.out.println("Input has " + n + " lines.");
-
-        Shipment[] shiplist = new Shipment[n];
+        Shipment[] shiplist = new Shipment[numLinesinInput];
 
         DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -81,7 +75,7 @@ public class Main {
             String line;
             int i = 0;
             while ((line = br.readLine()) != null) {
-                String[] data=line.split(" ");
+                String[] data = line.split(" ");
                 String Datestring = data[0];
                 Date Date = formatter.parse(Datestring);
                 String SLC = data[1];
@@ -94,14 +88,31 @@ public class Main {
                 double OriginLong = Double.parseDouble(data[8]);
 
                 shiplist[i] = new Shipment(Date, SLC, Weight, Nb, Volume, ClusterLat, ClusterLong, OriginLat, OriginLong);
+
                 i++;
             }
         } catch (Exception e) {
             e.getStackTrace();
         }
-        System.out.println("success");
-        return shiplist;
 
+        return shiplist;
+        } //close get input method
+
+    public static void verifyInput(Shipment[] sl, Customer[] cl) {
+        String[] uc = Shipment.getUnique(sl);
+        System.out.println("There are " + uc.length + " unique Customers plus 1 Cluster.");
+
+        int n = sl.length;
+        int tally = 0;
+        for (Customer c : cl) {
+            tally += c.getNumShip();
+        }
+
+        if (n == tally && n == numLinesinInput) {
+            System.out.println("Input integrity verified: Shipment List length of " + n + " MATCHES Tally of individual clusters' number of shipments of " + tally + ", MATCHING input Number of Lines of " + numLinesinInput);
+        } else {
+            System.out.println("Input integrity could not be verified: Shipment List length of " + n + " DOES NOT MATCH Tally of individual clusters' number of shipments of " + tally + ", DOES NOT MATCH input Number of Lines of " + numLinesinInput);
         }
     }
+    } //close class
 
