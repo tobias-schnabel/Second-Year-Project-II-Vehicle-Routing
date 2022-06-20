@@ -23,24 +23,26 @@ public class Main {
 
         System.out.println("There are " + uniqueCust.length + " unique Customers plus 1 Cluster.");
 
-        Customer[] Customerlist = new Customer[uniqueCust.length + 1];
-        Shipment cluster = ShipList[0];
-        Customerlist[0] = new Customer(cluster.getOriginClusterLat(), cluster.getOriginClusterLong(), "CLUSTER", ShipList.length);
+        Customer[] Customerlist = new Customer[uniqueCust.length];
 
-        for (int i = 1; i < Customerlist.length; i++) {
-            Customerlist[i] = new Customer(uniqueCust[i-1]);
+        //Creates customer list, note that some customers with different SLC have the same coordinates
+        for (int i = 0; i < Customerlist.length; i++) {
+            Customerlist[i] = new Customer(uniqueCust[i]);
+            String id = uniqueCust[i];
             for(Shipment ship : ShipList) {
                 if(Customerlist[i].getID().equals(ship.getSLC())) {
                     Customerlist[i].setLat(ship.getOriginLat());
                     Customerlist[i].setLon(ship.getOriginLong());
                     Customerlist[i].incrementNum();
+                    break;
                 }
+
             }
         }
 
-        System.out.println(Customerlist[20]);
-        System.out.println(Customerlist[0]);
-
+        for(Customer cust: Customerlist){
+            System.out.println(cust);
+        }
     }
 
     public static Shipment[] getInput(String filepath)
@@ -62,7 +64,7 @@ public class Main {
         Scanner input = new Scanner(System.in);
         Shipment[] shiplist = new Shipment[n];
 
-        DateFormat formatter = new SimpleDateFormat("yyyy-mm-dd");
+        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
