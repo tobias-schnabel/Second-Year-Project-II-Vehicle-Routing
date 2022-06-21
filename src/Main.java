@@ -37,8 +37,8 @@ public class Main {
     }
 
     private static ArrayList<Date> genDateList(Shipment[] SL){
-        int n = 0;
-        ArrayList<Date> dateList = new ArrayList<Date>();
+
+        ArrayList<Date> dateList = new ArrayList<>();
 
         for (Shipment shipment : SL) {//creates list of dates
             boolean inlist = false;
