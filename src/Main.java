@@ -12,6 +12,21 @@ public class Main {
     //2. Local Search / neighbouring optimization
     //3. Truck class
     //4. cleanup
+    //basic idea: take truck -> go to nearest loc -> ... -> either maxvol/maxweight, repeat
+    //improve with localsearch
+
+    //add arraylist/array to each truck where it's been in what order
+    //add method to customer class to assign unique ID to each shipment (maybe)
+
+    //interact truck objects with customer objects (visited variable, #packages still ot be picked up)
+
+    //(Tobias) extend Customers class to subclass cluster, add tally variable to verify that total # of shipments
+    //up covers everything in ship list
+
+    //
+
+    static String pattern = "dd/MM/yyyy";
+    static SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 
     private static int numLinesInInput = 0;
 
@@ -62,7 +77,7 @@ public class Main {
                 TVC += ship.distance()*VC;
         }
 
-        System.out.println("Trucks and cost on the date: " + curShipments.get(0).getPDate());
+        System.out.println("Trucks and cost on the date: " + simpleDateFormat.format(curShipments.get(0).getPDate()));
         System.out.println("Number of total trucks: "+ trucks);
         System.out.println("The cost of delivery is: "+String.format("%.2f",TFC+TVC));
 
@@ -72,10 +87,12 @@ public class Main {
         assert ShipList != null;
         String[] uniqueCust = Shipment.getUnique(ShipList);
 
-        Customer[] customerList = new Customer[uniqueCust.length];
+        Customer[] customerList = new Customer[uniqueCust.length + 1];
+        customerList[0] = new Customer(ShipList[0].getOriginClusterLat(), ShipList[0].getOriginClusterLong(),"0",0);
+        customerList[0].setNumShip(ShipList.length);
         //Creates customer list, note that some customers with different SLC have the same coordinates
-        for (int i = 0; i < customerList.length; i++) {
-            customerList[i] = new Customer(uniqueCust[i]);
+        for (int i = 1; i < customerList.length; i++) {
+            customerList[i] = new Customer(uniqueCust[i -1]);
             for(Shipment ship : ShipList) {
                 if(customerList[i].getID().equals(ship.getSLC())) {
                     customerList[i].setLat(ship.getOriginLat());
@@ -158,43 +175,35 @@ public class Main {
 
         int n = sl.length;
         int tally = 0;
-        for (Customer c : cl) {
-            tally += c.getNumShip();
-        }
+        for (int i = 1; i < cl.length; i++) {
+
+                tally += cl[i].getNumShip();
+            }
 
         if (n == tally && n == numLinesInInput) {
-            System.out.println("Input integrity verified: Shipment List length of " + n + " MATCHES Tally of individual clusters' number of shipments of " + tally + ", MATCHING input Number of Lines of " + numLinesInInput);
+            System.out.println("Input integrity verified: Shipment List length of " + n + " MATCHES Tally of individual clusters' number of shipments of " + tally + ", MATCHING input Number of Lines of " + numLinesInInput + "\n");
         } else {
-            System.out.println("Input integrity could not be verified: Shipment List length of " + n + " DOES NOT MATCH Tally of individual clusters' number of shipments of " + tally + ", DOES NOT MATCH input Number of Lines of " + numLinesInInput);
+            System.out.println("Input integrity could not be verified: Shipment List length of " + n + " DOES NOT MATCH Tally of individual clusters' number of shipments of " + tally + ", DOES NOT MATCH input Number of Lines of " + numLinesInInput + "\n");
         }
     }//close verifyInput method
 
    public static double[][] createDistanceMatrix(Shipment[] SL, Customer[] CL){
 
        int n = CL.length;
-       double[][] dMatrix = new double[n+1][n+1];
-
-       //add the cluster as a "customer"
-       //all shipments have the same cluster, we use the first shipment to get the cluster info
-       Customer cluster = new Customer(SL[0].getOriginClusterLat(), SL[0].getOriginClusterLong(),"0",0);
-
-       //fill in distance from cluster to customers
-       for(int k = 0; k < n; k++){
-            double d = cluster.distance(CL[k]);
-            dMatrix[0][k+1] = d;
-            dMatrix[k+1][0] = d;
-       }
+       double[][] dMatrix = new double[n][n];
 
        //fill in distance from customer to customer
        for(int i = 0; i < n; i++){
            for(int j = i; j < n; j++){
                double d = CL[i].distance(CL[j]);
-               dMatrix[i+1][j+1] = d;
-               dMatrix[j+1][i+1] = d;
+               dMatrix[i][j] = d;
+               dMatrix[j][i] = d;
            }
        }
        return dMatrix;
     }//close distance matrix method
+
+
 
 } //close main class
 
