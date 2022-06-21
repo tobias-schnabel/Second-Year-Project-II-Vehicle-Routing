@@ -7,6 +7,12 @@ import java.nio.file.*;
 //Obbe Pulles and Tobias Schnabel
 public class Main {
 
+    //TODO in no particular order
+    //1. Base case
+    //2. Pathfinding / minimum cost flow / packing of trucks
+    //3. Local Search / neighbouring optimization
+    //4. cleanup
+
     private static int numLinesInInput = 0;
 
     public static void main (String[] args) {
@@ -25,13 +31,41 @@ public class Main {
         ArrayList<Date> dateList = genDateList(ShipList);
         double[][] distanceMatrix = createDistanceMatrix(ShipList, CustomerList);
 
-        //TODO in no particular order
-        //1. Create distance/adjacency matrix
-        //2. Base case
-        //3. Pathfinding / minimum cost flow / packing of trucks
-        //4. Local Search / neighbouring optimization
-        //5. cleanup
+        solve(distanceMatrix, dateList.get(0), ShipList, CustomerList);
+
     }
+
+    public static void solve(double[][] dMatrix, Date date, Shipment[] SL,Customer[] CL){
+
+        double TFC = 450; double TVC = 0; double TC = 0;
+
+        //add truck object
+        int trucks = 0;
+
+        double FC = 450; double VC = 1.5;
+        double maxWeight = 22000; double maxVolume = 82;
+        double currentWeight = 0;
+        double currentVolume = 0;
+
+        ArrayList<Shipment> curShipments = new ArrayList<>();
+
+        for (Shipment shipment: SL) {
+            if (shipment.getPDate().compareTo(date) == 0) {
+                curShipments.add(shipment);
+            }
+        }
+
+        //base case to assign each shipment their own truck
+        for(Shipment ship: curShipments){
+                trucks++;
+                TFC += FC;
+                TVC += ship.distance()*VC;
+        }
+        System.out.println("Number of total trucks: "+ trucks);
+        System.out.println("The cost of delivery is: "+String.format("%.2f",TFC+TVC));
+
+    }
+
     private static Customer[] getCustomers(Shipment[] ShipList) {
         assert ShipList != null;
         String[] uniqueCust = Shipment.getUnique(ShipList);
