@@ -1,3 +1,4 @@
+import javax.lang.model.type.ArrayType;
 import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -21,17 +22,38 @@ public class Main {
             e.printStackTrace();
         }
 
-        Customer[] CustomerList = getCustomers(ShipList);
+       Customer[] CustomerList = getCustomers(ShipList);
 
-        verifyInput(ShipList, CustomerList);
+       verifyInput(ShipList, CustomerList);
+
+       ArrayList<Date> dateList = genDateList(ShipList);
 
         //TODO in no particular order
         //1. Create distance/adjacency matrix
         //2. Base case
         //3. Pathfinding / minimum cost flow / packing of trucks
         //4. Local Search / neighbouring optimization
-        //5. Sort shipments on date (array of shipments on a particular day, maybe arraylist of arraylists?)
-        //6. Cleanup
+        //5. Cleanup
+    }
+
+    private static ArrayList<Date> genDateList(Shipment[] SL){
+        int n = 0;
+        ArrayList<Date> dateList = new ArrayList<Date>();
+
+        for (Shipment shipment : SL) {//creates list of dates
+            boolean inlist = false;
+            Date cur = shipment.getPDate();
+            for (Date date : dateList) {
+                if (cur.compareTo(date) == 0) {
+                    inlist = true;
+                    break;
+                }
+            }
+            if (!inlist) {
+                dateList.add(cur);
+            }
+        }
+        return dateList;
     }
 
     private static Customer[] getCustomers(Shipment[] ShipList) {
