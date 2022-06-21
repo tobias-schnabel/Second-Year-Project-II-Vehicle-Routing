@@ -57,6 +57,10 @@ public class Customer {
         this.numShip += 1;
     }
 
+    public void setNumShip(int numShip) {
+        this.numShip = numShip;
+    }
+
     @Override
     public String toString() {
         return "Customer{" +
