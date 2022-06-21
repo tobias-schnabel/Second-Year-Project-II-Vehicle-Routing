@@ -1,4 +1,3 @@
-import javax.lang.model.type.ArrayType;
 import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -11,29 +10,43 @@ public class Main {
     private static int numLinesinInput = 0;
 
     public static void main (String[] args) {
-
-        //reads shipment file
+        //reads shipment files
         Shipment[] ShipList = null;
-        try{
+        try {
             String filename = "Data.txt";
             ShipList = getInput(filename);
-        }
-        catch (FileNotFoundException e){
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
 
-       Customer[] CustomerList = getCustomers(ShipList);
+        Customer[] CustomerList = getCustomers(ShipList);
+        verifyInput(ShipList, CustomerList);
 
-       verifyInput(ShipList, CustomerList);
-
-       ArrayList<Date> dateList = genDateList(ShipList);
-
+        ArrayList<Date> dateList = genDateList(ShipList);
         //TODO in no particular order
         //1. Create distance/adjacency matrix
         //2. Base case
         //3. Pathfinding / minimum cost flow / packing of trucks
         //4. Local Search / neighbouring optimization
-        //5. Cleanup
+        //5. cleanup
+    }
+    private static Customer[] getCustomers(Shipment[] ShipList) {
+        assert ShipList != null;
+        String[] uniqueCust = Shipment.getUnique(ShipList);
+
+        Customer[] Customerlist = new Customer[uniqueCust.length];
+        //Creates customer list, note that some customers with different SLC have the same coordinates
+        for (int i = 0; i < Customerlist.length; i++) {
+            Customerlist[i] = new Customer(uniqueCust[i]);
+            for(Shipment ship : ShipList) {
+                if(Customerlist[i].getID().equals(ship.getSLC())) {
+                    Customerlist[i].setLat(ship.getOriginLat());
+                    Customerlist[i].setLon(ship.getOriginLong());
+                    Customerlist[i].incrementNum();
+                } //if
+            } //inner for
+        } //outer for
+        return Customerlist;
     }
 
     private static ArrayList<Date> genDateList(Shipment[] SL){
@@ -54,25 +67,6 @@ public class Main {
             }
         }
         return dateList;
-    }
-
-    private static Customer[] getCustomers(Shipment[] ShipList) {
-        assert ShipList != null;
-        String[] uniqueCust = Shipment.getUnique(ShipList);
-        Customer[] CustomerList = new Customer[uniqueCust.length];
-
-        //Creates customer list, note that some customers with different SLC have the same coordinates
-        for (int i = 0; i < CustomerList.length; i++) {
-            CustomerList[i] = new Customer(uniqueCust[i]);
-            for(Shipment ship : ShipList) {
-                if(CustomerList[i].getID().equals(ship.getSLC())) {
-                    CustomerList[i].setLat(ship.getOriginLat());
-                    CustomerList[i].setLon(ship.getOriginLong());
-                    CustomerList[i].incrementNum();
-                } //if
-            } //inner for
-        } //outer for
-        return CustomerList;
     }
 
     public static Shipment[] getInput(String filepath)
