@@ -31,15 +31,15 @@ public class Main {
         ArrayList<Date> dateList = genDateList(ShipList);
         double[][] distanceMatrix = createDistanceMatrix(ShipList, CustomerList);
 
-        solve(distanceMatrix, dateList.get(0), ShipList, CustomerList);
+        solve(distanceMatrix, dateList.get(2), ShipList, CustomerList);
 
     }
 
     public static void solve(double[][] dMatrix, Date date, Shipment[] SL,Customer[] CL){
 
-        double TFC = 450; double TVC = 0; double TC = 0;
+        double TFC = 450; double TVC = 0;
 
-        //add truck object
+        //TODO: add truck object
         int trucks = 0;
 
         double FC = 450; double VC = 1.5;
@@ -61,6 +61,8 @@ public class Main {
                 TFC += FC;
                 TVC += ship.distance()*VC;
         }
+
+        System.out.println("Trucks and cost on the date: " + curShipments.get(0).getPDate());
         System.out.println("Number of total trucks: "+ trucks);
         System.out.println("The cost of delivery is: "+String.format("%.2f",TFC+TVC));
 

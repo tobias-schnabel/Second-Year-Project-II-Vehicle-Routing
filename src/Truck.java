@@ -12,5 +12,8 @@ public class Truck {
     public Truck(){
     }
 
-
+    public String getLocation(){
+        int n = this.shipments.size();
+        return this.shipments.get(n-1).getSLC();
+    }
 }
