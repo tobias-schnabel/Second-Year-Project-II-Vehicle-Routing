@@ -8,9 +8,9 @@ import java.nio.file.*;
 public class Main {
 
     //TODO in no particular order
-    //1. Base case
-    //2. Pathfinding / minimum cost flow / packing of trucks
-    //3. Local Search / neighbouring optimization
+    //1. Pathfinding / minimum cost flow / packing of trucks
+    //2. Local Search / neighbouring optimization
+    //3. Truck class
     //4. cleanup
 
     private static int numLinesInInput = 0;
