@@ -32,8 +32,8 @@ public class Truck {
     public void addShipment(Shipment s){
         shipments.add(s);
     }
-    public void addToRoute(String ID){
-        this.route.add(ID);
+    public void addToRoute(Customer c){
+        this.route.add(c.getID());
     }
     public int getTruckId(){
         return this.truckId;
