@@ -10,12 +10,10 @@ public class Main {
     //TODO in no particular order
     //1. Pathfinding / minimum cost flow / packing of trucks
     //2. Local Search / neighbouring optimization
-    //3. Truck class
-    //4. cleanup
+    //3. cleanup
     //basic idea: take truck -> go to nearest loc -> ... -> either maxvol/maxweight, repeat
     //improve with localsearch
 
-    //add arraylist/array to each truck where it's been in what order
     //add method to customer class to assign unique ID to each shipment (maybe)
 
     //interact truck objects with customer objects (visited variable, #packages still ot be picked up)
@@ -46,29 +44,26 @@ public class Main {
         ArrayList<Date> dateList = genDateList(ShipList);
         double[][] distanceMatrix = createDistanceMatrix(CustomerList);
 
-        solve(distanceMatrix, dateList.get(0), ShipList, CustomerList);
+        solve(distanceMatrix, dateList.get(2), ShipList, CustomerList);
 
     }
 
     public static void solve(double[][] dMatrix, Date date, Shipment[] SL,Customer[] CL){
 
+        //start with one truck
         double TFC = 450; double TVC = 0;
+        double FC = 450; double VC = 1.5;
 
-        //TODO: add truck object
-//        int trucks = 0;
-//
-          double FC = 450; double VC = 1.5;
-//        double maxWeight = 22000; double maxVolume = 82;
-//        double currentWeight = 0;
-//        double currentVolume = 0;
-
+        //creates arraylist of to be shipped shipments
         ArrayList<Shipment> curShipments = new ArrayList<>();
-
         for (Shipment shipment: SL) {
             if (shipment.getPDate().compareTo(date) == 0) {
                 curShipments.add(shipment);
             }
         }
+
+        //saves current date
+        Date currentDate = curShipments.get(0).getPDate();
 
         //list of trucks
         int count = 0;
@@ -77,7 +72,7 @@ public class Main {
         Truck truck = truckArrayList.get(0);
 
 
-        //until there are no more current shipments
+        //while there are still shipments to be delivered
         while(curShipments.size() != 0){
 
             //find the closest customer who needs a delivery
@@ -104,8 +99,8 @@ public class Main {
                     truck.addWeight(s.getWeight());
                     truck.addShipment(s);
 
-                    curShipments.remove(s);
-                    i=0;
+                    curShipments.remove(i);
+                    i--;
                 }
             }
 
@@ -114,16 +109,8 @@ public class Main {
 
         }
 
-
-     //   //base case to assign each shipment their own truck
-     //   for(Shipment ship: curShipments){
-     //           trucks++;
-     //           TFC += FC;
-     //           TVC += ship.distance()*VC;
-     //   }
-
-        //System.out.println("Trucks and cost on the date: " + simpleDateFormat.format(curShipments.get(0).getPDate()));
-        System.out.println("Number of total trucks: ");
+        System.out.println("Trucks and cost on the date: " + simpleDateFormat.format(currentDate));
+        System.out.println("Number of total trucks: " + truckArrayList.size());
         System.out.println("The cost of delivery is: "+String.format("%.2f",TFC+TVC));
 
     }
@@ -132,8 +119,8 @@ public class Main {
 
         String locString = t.getLocation();
         int loc = -1;
-        Shipment[] SL = toArray(CSL);
-        Customer[] CCL = getCustomers(SL);
+
+        Customer[] currentCL = getCustomers(toArray(CSL));
 
 
         //get location of truck to use in distance matrix
@@ -151,7 +138,7 @@ public class Main {
         for(int i = 1; i<matrix.length; i++){
 
             //goes through the current customers list(retrieved from the shipments)
-            for (Customer customer : CCL) {
+            for (Customer customer : currentCL) {
                 //skips itself
                 if (i == loc) {
                 }
