@@ -75,7 +75,7 @@ public class Main {
         while(!curShipments.isEmpty()){
 
             Truck truck = new Truck(count);
-            getMinDistCustomer(curShipments, truck, dMatrix,CL);
+            Customer next = getMinDistCustomer(curShipments, truck, dMatrix);
 
             count++;
 
@@ -97,9 +97,11 @@ public class Main {
     }
 
 
-    public static Customer getMinDistCustomer(ArrayList<Shipment> CSL, Truck t, double[][] matrix, Customer[] CL){
+    public static Customer getMinDistCustomer(ArrayList<Shipment> CSL, Truck t, double[][] matrix){
+
         String locString = t.getLocation();
         int loc = -1;
+        Customer[] CL = getCustomers(toArray(CSL));
 
         for(int i = 0; i < CL.length; i++){
             if(CL[i].getID().equals(locString)){
@@ -107,16 +109,25 @@ public class Main {
             }
         }
 
-        int min = -1;
+        int minpos = -1;
+        double min = Double.MAX_VALUE;
 
         for(int i = 0; i < CL.length; i++){
             if(i == loc){}
             else if(min >= matrix[loc][i]) {
                 min = matrix[loc][i];
+                minpos = i;
             }
         }
 
-        return null;
+        return CL[minpos];
+    }
+    public static Shipment[] toArray(ArrayList<Shipment> ASL){
+        Shipment[] SL = new Shipment[ASL.size()];
+        for(int i = 0; i< ASL.size(); i++){
+            SL[i] = ASL.get(i);
+        }
+        return SL;
     }
     private static Customer[] getCustomers(Shipment[] ShipList) {
         assert ShipList != null;
