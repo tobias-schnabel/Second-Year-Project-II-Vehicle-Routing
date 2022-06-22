@@ -44,7 +44,7 @@ public class Main {
         verifyInput(ShipList, CustomerList);
 
         ArrayList<Date> dateList = genDateList(ShipList);
-        double[][] distanceMatrix = createDistanceMatrix(ShipList, CustomerList);
+        double[][] distanceMatrix = createDistanceMatrix(CustomerList);
 
         solve(distanceMatrix, dateList.get(2), ShipList, CustomerList);
 
@@ -187,7 +187,7 @@ public class Main {
         }
     }//close verifyInput method
 
-   public static double[][] createDistanceMatrix(Shipment[] SL, Customer[] CL){
+   public static double[][] createDistanceMatrix(Customer[] CL){
 
        int n = CL.length;
        double[][] dMatrix = new double[n][n];
