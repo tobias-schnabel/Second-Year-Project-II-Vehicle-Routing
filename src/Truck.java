@@ -8,10 +8,12 @@ public class Truck {
     private final double maxVolume = 82;
     private double currentVolume = 0;
     private final int truckId;
-    private ArrayList<Shipment> shipments;
-    private ArrayList<Customer> route;
+    private ArrayList<Shipment> shipments = new ArrayList<Shipment>();
+    private ArrayList<Customer> route = new ArrayList<>();
 
     public Truck(int num){
+        Customer start = new Customer(43.6206051062346, 1.39423144268438, "0",0);
+        this.route.add(start);
         this.truckId = num;
     }
     public void addWeight(double w){
@@ -40,7 +42,7 @@ public class Truck {
     }
 
     public String getLocation(){
-        int n = this.shipments.size();
-        return this.shipments.get(n-1).getSLC();
+        int n = this.route.size();
+        return this.route.get(n-1).getID();
     }
 }

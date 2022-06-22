@@ -13,7 +13,6 @@ public class Customer {
         this.ID = ID;
         this.numShip = num;
     }
-
     public Customer(String ID) {
         this.lat = 0;
         this.lon = 0;

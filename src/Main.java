@@ -46,7 +46,7 @@ public class Main {
         ArrayList<Date> dateList = genDateList(ShipList);
         double[][] distanceMatrix = createDistanceMatrix(CustomerList);
 
-        solve(distanceMatrix, dateList.get(2), ShipList, CustomerList);
+        solve(distanceMatrix, dateList.get(0), ShipList, CustomerList);
 
     }
 
@@ -55,12 +55,12 @@ public class Main {
         double TFC = 450; double TVC = 0;
 
         //TODO: add truck object
-        int trucks = 0;
-
-        double FC = 450; double VC = 1.5;
-        double maxWeight = 22000; double maxVolume = 82;
-        double currentWeight = 0;
-        double currentVolume = 0;
+//        int trucks = 0;
+//
+          double FC = 450; double VC = 1.5;
+//        double maxWeight = 22000; double maxVolume = 82;
+//        double currentWeight = 0;
+//        double currentVolume = 0;
 
         ArrayList<Shipment> curShipments = new ArrayList<>();
 
@@ -70,15 +70,47 @@ public class Main {
             }
         }
 
-
+        //list of trucks
         int count = 0;
-        while(!curShipments.isEmpty()){
+        ArrayList<Truck> truckArrayList = new ArrayList<>();
+        truckArrayList.add(new Truck(count));
+        Truck truck = truckArrayList.get(0);
 
-            Truck truck = new Truck(count);
-            Customer next = getMinDistCustomer(curShipments, truck, dMatrix);
 
-            count++;
+        //until there are no more current shipments
+        while(curShipments.size() != 0){
 
+            //find the closest customer who needs a delivery
+            Customer next = getMinDistCustomer(curShipments, truck, dMatrix, CL);
+            String ID = next.getID();
+
+
+            //removes all shipments that belong to this customer from the shipment list
+            //checks whether we need a new truck and move the truck
+            for(int i = 0; i < curShipments.size(); i++){
+                //checks if shipment i belongs to the customer
+                if(curShipments.get(i).getSLC().equals(ID)){
+                    Shipment s = curShipments.get(i);
+
+                    //if either w>22000 or v>82 would happen, add new truck to trucklist
+                    if(s.getWeight() + truck.getCurrentWeight() > 22000 || s.getVolume() + truck.getCurrentVolume()>82){
+                        count++;
+                        truckArrayList.add(new Truck(count));
+                        truck = truckArrayList.get(truckArrayList.size()-1);
+                        TFC+=FC;
+                    }
+
+                    truck.addVolume(s.getVolume());
+                    truck.addWeight(s.getWeight());
+                    truck.addShipment(s);
+
+                    curShipments.remove(s);
+                    i=0;
+                }
+            }
+
+            TVC += VC*next.distance(truck.getRoute().get(truck.getRoute().size()-1));
+            truck.addToRoute(next);
 
         }
 
@@ -90,33 +122,51 @@ public class Main {
      //           TVC += ship.distance()*VC;
      //   }
 
-        System.out.println("Trucks and cost on the date: " + simpleDateFormat.format(curShipments.get(0).getPDate()));
-        System.out.println("Number of total trucks: "+ trucks);
+        //System.out.println("Trucks and cost on the date: " + simpleDateFormat.format(curShipments.get(0).getPDate()));
+        System.out.println("Number of total trucks: ");
         System.out.println("The cost of delivery is: "+String.format("%.2f",TFC+TVC));
 
     }
 
-
-    public static Customer getMinDistCustomer(ArrayList<Shipment> CSL, Truck t, double[][] matrix){
+    public static Customer getMinDistCustomer(ArrayList<Shipment> CSL, Truck t, double[][] matrix, Customer[] CL){
 
         String locString = t.getLocation();
         int loc = -1;
-        Customer[] CL = getCustomers(toArray(CSL));
+        Shipment[] SL = toArray(CSL);
+        Customer[] CCL = getCustomers(SL);
 
+
+        //get location of truck to use in distance matrix
         for(int i = 0; i < CL.length; i++){
             if(CL[i].getID().equals(locString)){
                 loc = i;
             }
         }
 
+        //setup minpos
         int minpos = -1;
         double min = Double.MAX_VALUE;
 
-        for(int i = 0; i < CL.length; i++){
-            if(i == loc){}
-            else if(min >= matrix[loc][i]) {
-                min = matrix[loc][i];
-                minpos = i;
+        //goes through the row of the current location of truck's distance matrix
+        for(int i = 1; i<matrix.length; i++){
+
+            //goes through the current customers list(retrieved from the shipments)
+            for (Customer customer : CCL) {
+                //skips itself
+                if (i == loc) {
+                }
+
+                //if we get a lower distance from the current location to the next
+                //AND
+                //if the customer is in the current customer list (we dont want to move to customers who dont have an order in the list)
+                //we update the minimum distance and the minimum position
+
+                //all of this seems horribly inefficient and I think we might be able to improve on this
+                //by doing some sort of "visited array" don't know yet though.
+                else if (customer.getID().equals(CL[i].getID()) && matrix[loc][i] < min) {
+                    min = matrix[loc][i];
+                    minpos = i;
+                }
             }
         }
 
