@@ -9,7 +9,7 @@ public class Truck {
     private double currentVolume = 0;
     private final int truckId;
     private ArrayList<Shipment> shipments;
-    private ArrayList<String> route;
+    private ArrayList<Customer> route;
 
     public Truck(int num){
         this.truckId = num;
@@ -26,14 +26,14 @@ public class Truck {
     public double getCurrentVolume(){
         return this.currentVolume;
     }
-    public ArrayList<String> getRoute(){
+    public ArrayList<Customer> getRoute(){
         return this.route;
     }
     public void addShipment(Shipment s){
         shipments.add(s);
     }
     public void addToRoute(Customer c){
-        this.route.add(c.getID());
+        this.route.add(c);
     }
     public int getTruckId(){
         return this.truckId;

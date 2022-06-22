@@ -70,12 +70,25 @@ public class Main {
             }
         }
 
-        //base case to assign each shipment their own truck
-        for(Shipment ship: curShipments){
-                trucks++;
-                TFC += FC;
-                TVC += ship.distance()*VC;
+
+        int count = 0;
+        while(!curShipments.isEmpty()){
+
+            Truck truck = new Truck(count);
+            getMinDistCustomer(curShipments, truck, dMatrix,CL);
+
+            count++;
+
+
         }
+
+
+     //   //base case to assign each shipment their own truck
+     //   for(Shipment ship: curShipments){
+     //           trucks++;
+     //           TFC += FC;
+     //           TVC += ship.distance()*VC;
+     //   }
 
         System.out.println("Trucks and cost on the date: " + simpleDateFormat.format(curShipments.get(0).getPDate()));
         System.out.println("Number of total trucks: "+ trucks);
@@ -83,6 +96,28 @@ public class Main {
 
     }
 
+
+    public static Customer getMinDistCustomer(ArrayList<Shipment> CSL, Truck t, double[][] matrix, Customer[] CL){
+        String locString = t.getLocation();
+        int loc = -1;
+
+        for(int i = 0; i < CL.length; i++){
+            if(CL[i].getID().equals(locString)){
+                loc = i;
+            }
+        }
+
+        int min = -1;
+
+        for(int i = 0; i < CL.length; i++){
+            if(i == loc){}
+            else if(min >= matrix[loc][i]) {
+                min = matrix[loc][i];
+            }
+        }
+
+        return null;
+    }
     private static Customer[] getCustomers(Shipment[] ShipList) {
         assert ShipList != null;
         String[] uniqueCust = Shipment.getUnique(ShipList);
