@@ -8,7 +8,7 @@ import java.nio.file.*;
 public class Main {
 
     //TODO in no particular order
-    //1. Pathfinding / minimum cost flow / packing of trucks
+    //1. minimum cost flow? / packing of trucks?
     //2. Local Search / neighbouring optimization
     //3. cleanup
     //basic idea: take truck -> go to nearest loc -> ... -> either maxvol/maxweight, repeat
@@ -44,7 +44,7 @@ public class Main {
         ArrayList<Date> dateList = genDateList(ShipList);
         double[][] distanceMatrix = createDistanceMatrix(CustomerList);
 
-        solve(distanceMatrix, dateList.get(2), ShipList, CustomerList);
+        solve(distanceMatrix, dateList.get(0), ShipList, CustomerList);
 
     }
 
@@ -89,6 +89,8 @@ public class Main {
 
                     //if either w>22000 or v>82 would happen, add new truck to trucklist
                     if(s.getWeight() + truck.getCurrentWeight() > 22000 || s.getVolume() + truck.getCurrentVolume()>82){
+
+                        //TODO: PROBLEM: when we add new truck, we are NOT optimizing the first distance don't know yet how to solve (maybe break and boolean)
                         count++;
                         truckArrayList.add(new Truck(count));
                         truck = truckArrayList.get(truckArrayList.size()-1);
@@ -111,10 +113,15 @@ public class Main {
         //make all trucks go back to cluster
         for(Truck t: truckArrayList){
             Customer last = t.getEnd();
-            double backDist = last.distance(CL[0]);
             t.addToRoute(CL[0]);
-            TVC += VC*backDist;
+            TVC += VC*last.distance(CL[0]);
         }
+
+      // TODO BASIC IDEA OF IMPROVING:
+      // Step 1: take all trucks in the current list
+      // Step 2: LOCALSEARCH: 2-opt-exchange
+      // Step 3: LOCALSEARCH: Move
+      // Step 4: LOCALSEARCH: Swap
 
         System.out.println("Trucks and cost on the date: " + simpleDateFormat.format(currentDate));
         System.out.println("Number of total trucks: " + truckArrayList.size());
