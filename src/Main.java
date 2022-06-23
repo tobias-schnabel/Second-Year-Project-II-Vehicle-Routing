@@ -123,9 +123,12 @@ public class Main {
       // Step 3: LOCALSEARCH: Move
       // Step 4: LOCALSEARCH: Swap
 
+
+
+
         System.out.println("Trucks and cost on the date: " + simpleDateFormat.format(currentDate));
-        System.out.println("Number of total trucks: " + truckArrayList.size());
-        System.out.println("The cost of delivery is: "+String.format("%.2f",TFC+TVC));
+       System.out.println("Number of total trucks: " + truckArrayList.size());
+       System.out.println("The cost of delivery is: "+String.format("%.2f",TFC+TVC));
 
     }
 
@@ -144,8 +147,8 @@ public class Main {
             }
         }
 
-        //setup minpos
-        int minpos = -1;
+        //setup minPos
+        int minPos = -1;
         double min = Double.MAX_VALUE;
 
         //goes through the row of the current location of truck's distance matrix
@@ -157,17 +160,17 @@ public class Main {
                 //goes through the current customers list(retrieved from the shipments)
                 for (Customer customer : currentCL) {
 
-                    //if the customer at position i is in the list of customers that need a delivery
+                    //if the customer at position "i" is in the list of customers that need a delivery
                     //AND we are closest to that customer -> update the minimum
                     if (customer.getID().equals(CL[i].getID()) && matrix[loc][i] < min) {
                         min = matrix[loc][i];
-                        minpos = i;
-
+                        minPos = i;
+                        break;
                     }//close if
                 }//close for
             }//close if
         }//close for
-        return CL[minpos];
+        return CL[minPos];
     }//close method
     public static Shipment[] toArray(ArrayList<Shipment> ASL){
         Shipment[] SL = new Shipment[ASL.size()];
