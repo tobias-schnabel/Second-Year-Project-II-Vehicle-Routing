@@ -54,7 +54,7 @@ public class Main {
         double TFC = 450; double TVC = 0;
         double FC = 450; double VC = 1.5;
 
-        //creates arraylist of to be shipped shipments
+        //creates arraylist of the to be shipped shipments
         ArrayList<Shipment> curShipments = new ArrayList<>();
         for (Shipment shipment: SL) {
             if (shipment.getPDate().compareTo(date) == 0) {
@@ -65,7 +65,7 @@ public class Main {
         //saves current date
         Date currentDate = curShipments.get(0).getPDate();
 
-        //list of trucks
+        //create list of trucks
         int count = 0;
         ArrayList<Truck> truckArrayList = new ArrayList<>();
         truckArrayList.add(new Truck(count));
@@ -103,10 +103,17 @@ public class Main {
                     i--;
                 }
             }
-
             TVC += VC*next.distance(truck.getRoute().get(truck.getRoute().size()-1));
             truck.addToRoute(next);
 
+        }
+
+        //make all trucks go back to cluster
+        for(Truck t: truckArrayList){
+            Customer last = t.getEnd();
+            double backDist = last.distance(CL[0]);
+            t.addToRoute(CL[0]);
+            TVC += VC*backDist;
         }
 
         System.out.println("Trucks and cost on the date: " + simpleDateFormat.format(currentDate));
@@ -137,28 +144,24 @@ public class Main {
         //goes through the row of the current location of truck's distance matrix
         for(int i = 1; i<matrix.length; i++){
 
-            //goes through the current customers list(retrieved from the shipments)
-            for (Customer customer : currentCL) {
-                //skips itself
-                if (i == loc) {
-                }
+            //don't want to stay at the current location
+            if (i != loc) {
 
-                //if we get a lower distance from the current location to the next
-                //AND
-                //if the customer is in the current customer list (we dont want to move to customers who dont have an order in the list)
-                //we update the minimum distance and the minimum position
+                //goes through the current customers list(retrieved from the shipments)
+                for (Customer customer : currentCL) {
 
-                //all of this seems horribly inefficient and I think we might be able to improve on this
-                //by doing some sort of "visited array" don't know yet though.
-                else if (customer.getID().equals(CL[i].getID()) && matrix[loc][i] < min) {
-                    min = matrix[loc][i];
-                    minpos = i;
-                }
-            }
-        }
+                    //if the customer at position i is in the list of customers that need a delivery
+                    //AND we are closest to that customer -> update the minimum
+                    if (customer.getID().equals(CL[i].getID()) && matrix[loc][i] < min) {
+                        min = matrix[loc][i];
+                        minpos = i;
 
+                    }//close if
+                }//close for
+            }//close if
+        }//close for
         return CL[minpos];
-    }
+    }//close method
     public static Shipment[] toArray(ArrayList<Shipment> ASL){
         Shipment[] SL = new Shipment[ASL.size()];
         for(int i = 0; i< ASL.size(); i++){

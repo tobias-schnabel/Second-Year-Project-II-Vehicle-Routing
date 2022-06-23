@@ -40,6 +40,7 @@ public class Truck {
     public int getTruckId(){
         return this.truckId;
     }
+    public Customer getEnd(){return this.route.get(this.route.size()-1);}
 
     public String getLocation(){
         int n = this.route.size();
