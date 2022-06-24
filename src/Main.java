@@ -62,9 +62,6 @@ public class Main {
             }
         }
 
-        //saves current date
-        Date currentDate = curShipments.get(0).getPDate();
-
         //create list of trucks
         int count = 0;
         ArrayList<Truck> truckArrayList = new ArrayList<>();
@@ -75,6 +72,7 @@ public class Main {
         //while there are still shipments to be delivered
         while(curShipments.size() != 0){
 
+            boolean skip = false;
             //find the closest customer who needs a delivery
             Customer next = getMinDistCustomer(curShipments, truck, dMatrix, CL);
             String ID = next.getID();
@@ -95,6 +93,11 @@ public class Main {
                         truckArrayList.add(new Truck(count));
                         truck = truckArrayList.get(truckArrayList.size()-1);
                         TFC+=FC;
+
+                        //unsure about this break
+                        skip = true;
+                        break;
+
                     }
 
                     truck.addVolume(s.getVolume());
@@ -105,8 +108,10 @@ public class Main {
                     i--;
                 }
             }
-            TVC += VC*next.distance(truck.getRoute().get(truck.getRoute().size()-1));
-            truck.addToRoute(next);
+            if(!skip) {
+                TVC += VC * next.distance(truck.getRoute().get(truck.getRoute().size() - 1));
+                truck.addToRoute(next);
+            }
 
         }
 
@@ -126,7 +131,7 @@ public class Main {
 
 
 
-        System.out.println("Trucks and cost on the date: " + simpleDateFormat.format(currentDate));
+        System.out.println("Trucks and cost on the date: " + simpleDateFormat.format(date));
        System.out.println("Number of total trucks: " + truckArrayList.size());
        System.out.println("The cost of delivery is: "+String.format("%.2f",TFC+TVC));
 
@@ -138,8 +143,6 @@ public class Main {
         int loc = -1;
 
         Customer[] currentCL = getCustomers(toArray(CSL));
-
-
         //get location of truck to use in distance matrix
         for(int i = 0; i < CL.length; i++){
             if(CL[i].getID().equals(locString)){
@@ -170,6 +173,7 @@ public class Main {
                 }//close for
             }//close if
         }//close for
+
         return CL[minPos];
     }//close method
     public static Shipment[] toArray(ArrayList<Shipment> ASL){
