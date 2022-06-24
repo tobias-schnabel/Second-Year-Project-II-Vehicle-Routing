@@ -7,7 +7,7 @@ import java.nio.file.*;
 //Obbe Pulles and Tobias Schnabel
 public class Main {
 
-    //TODO in no particular order
+    //TODO: in no particular order !!!LINKED LISTS!!!
     //1. minimum cost flow? / packing of trucks?
     //2. Local Search / neighbouring optimization
     //3. cleanup
