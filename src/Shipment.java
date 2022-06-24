@@ -6,6 +6,7 @@ public class Shipment {
     //Date | Weight | Nb | Volume | OriginCLusterLat | OriginCLusterLong | OriginLat |OriginLong
     private final Date PDate;
     private final double Weight;
+    //remove nb
     private final double Nb;
     private final double Volume;
     private final double OriginClusterLat;
