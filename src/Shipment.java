@@ -4,22 +4,18 @@ import java.util.*;
 public class Shipment {
     //Data has columns as follows:
     //Date | Weight | Nb | Volume | OriginCLusterLat | OriginCLusterLong | OriginLat |OriginLong
+    //TODO: Give shipment a customer instead of OriginLat OriginLong and SLC
     private final Date PDate;
     private final double Weight;
-    //remove nb
-    private final double Nb;
     private final double Volume;
     private final double OriginClusterLat;
     private final double OriginClusterLong;
     private final double OriginLat;
     private final double OriginLong;
-
     private final String SLC;
-
-    public Shipment(Date PUDate, String SLC, double W, double Nb, double V, double OClat, double OClong, double Olat, double Olong){
+    public Shipment(Date PUDate, String SLC, double W, double V, double OClat, double OClong, double Olat, double Olong){
        this.PDate = PUDate;
        this.Weight = W;
-       this.Nb = Nb;
        this.Volume = V;
        this.OriginClusterLat = OClat;
        this.OriginClusterLong = OClong;
@@ -45,7 +41,6 @@ public class Shipment {
         return this.PDate;
     }
     public double getWeight() { return this.Weight; }
-    public double getNb() { return this.Nb; }
     public double getVolume() { return this.Volume; }
     public double getOriginLat() {return this.OriginLat;}
     public double getOriginLong() {return this.OriginLong;}
@@ -55,7 +50,6 @@ public class Shipment {
         return "Shipment{" +
                 "PDate=" + PDate +
                 ", Weight=" + Weight +
-                ", Nb=" + Nb +
                 ", Volume=" + Volume +
                 ", OriginClusterLat=" + OriginClusterLat +
                 ", OriginClusterLong=" + OriginClusterLong +
@@ -63,38 +57,21 @@ public class Shipment {
                 ", OriginLong=" + OriginLong +
                 '}';
     }
-
-//    public static Customer[] toCustomerList(Shipment[] shiplist){
-//        int n = shiplist.length;
-//        Customer[] list = new Customer[n];
-//        for(int i = 0; i < n; i++){
-//            Customer ref = new Customer();
-//            ref.setLat(shiplist[i].getOriginLat());
-//            ref.setLon(shiplist[i].getOriginLong());
-//            list[i] = ref;
-//        }
-//        return list;
-//
-//    }
-
     public String getSLC() {
         return SLC;
     }
-
     public double getOriginClusterLat() {
         return OriginClusterLat;
     }
-
     public double getOriginClusterLong() {
         return OriginClusterLong;
     }
-
     public static String[] getUnique(Shipment[] shiplist) {
         String[] rawSLC = new String[shiplist.length];
         for (int i = 0; i < shiplist.length; i++) {
             rawSLC[i] = shiplist[i].getSLC();
         }
-        String[] uniqueSLC = Arrays.stream(rawSLC).distinct().toArray(String[]::new);
-    return uniqueSLC;
+    return Arrays.stream(rawSLC).distinct().toArray(String[]::new);
     }
+
 } //close class

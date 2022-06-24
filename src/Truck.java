@@ -2,14 +2,11 @@ import java.util.ArrayList;
 
 public class Truck {
 
-
-    private final double maxWeight = 22000;
     private double currentWeight = 0;
-    private final double maxVolume = 82;
     private double currentVolume = 0;
     private final int truckId;
-    private ArrayList<Shipment> shipments = new ArrayList<Shipment>();
-    private ArrayList<Customer> route = new ArrayList<>();
+    private final ArrayList<Shipment> shipments = new ArrayList<>();
+    private final ArrayList<Customer> route = new ArrayList<>();
 
     public Truck(int num){
         Customer start = new Customer(43.6206051062346, 1.39423144268438, "0",0);
@@ -45,5 +42,12 @@ public class Truck {
     public String getLocation(){
         int n = this.route.size();
         return this.route.get(n-1).getID();
+    }
+
+    public boolean isEqual(Truck that){
+        return(this.truckId==that.truckId);
+    }
+    public boolean isFull(){
+        return (this.currentVolume < 82 && this.currentWeight < 22000);
     }
 }

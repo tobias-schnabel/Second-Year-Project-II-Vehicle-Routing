@@ -88,17 +88,15 @@ public class Main {
                     //if either w>22000 or v>82 would happen, add new truck to trucklist
                     if(s.getWeight() + truck.getCurrentWeight() > 22000 || s.getVolume() + truck.getCurrentVolume()>82){
 
-                        //TODO: PROBLEM: when we add new truck, we are NOT optimizing the first distance don't know yet how to solve (maybe break and boolean)
                         count++;
                         truckArrayList.add(new Truck(count));
                         truck = truckArrayList.get(truckArrayList.size()-1);
                         TFC+=FC;
-
-                        //unsure about this break
+                        //get out of for-loop to find minDistCustomer for new truck
                         skip = true;
                         break;
 
-                    }
+                    }//close new truck if
 
                     truck.addVolume(s.getVolume());
                     truck.addWeight(s.getWeight());
@@ -106,8 +104,8 @@ public class Main {
 
                     curShipments.remove(i);
                     i--;
-                }
-            }
+                }//close shipment if
+            }//close for-loop
             if(!skip) {
                 TVC += VC * next.distance(truck.getRoute().get(truck.getRoute().size() - 1));
                 truck.addToRoute(next);
@@ -129,20 +127,41 @@ public class Main {
       // Step 4: LOCALSEARCH: Swap
 
 
+        truckArrayList = improve(truckArrayList);
 
 
         System.out.println("Trucks and cost on the date: " + simpleDateFormat.format(date));
-       System.out.println("Number of total trucks: " + truckArrayList.size());
-       System.out.println("The cost of delivery is: "+String.format("%.2f",TFC+TVC));
+        System.out.println("Number of total trucks: " + truckArrayList.size());
+        System.out.println("The cost of delivery is: "+String.format("%.2f",TFC+TVC));
 
     }
 
+    public static ArrayList<Truck> improve(ArrayList<Truck> TL){
+        double tl = 0;
+        for(Truck t: TL){
+            tl += getRouteLength(t);
+            System.out.println(tl);
+
+
+
+        }
+        return TL;
+    }
+
+    public static double getRouteLength(Truck t){
+        Customer[] route = toArrayC(t.getRoute());
+        double d = 0;
+        for(int i = 1; i < route.length; i++){
+            d += route[i].distance(route[i-1]);
+        }
+        return d;
+    }
     public static Customer getMinDistCustomer(ArrayList<Shipment> CSL, Truck t, double[][] matrix, Customer[] CL){
 
         String locString = t.getLocation();
         int loc = -1;
 
-        Customer[] currentCL = getCustomers(toArray(CSL));
+        Customer[] currentCL = getCustomers(toArrayS(CSL));
         //get location of truck to use in distance matrix
         for(int i = 0; i < CL.length; i++){
             if(CL[i].getID().equals(locString)){
@@ -176,7 +195,14 @@ public class Main {
 
         return CL[minPos];
     }//close method
-    public static Shipment[] toArray(ArrayList<Shipment> ASL){
+    public static Customer[] toArrayC(ArrayList<Customer> ACL){
+        Customer[] CL = new Customer[ACL.size()];
+        for(int i = 0; i< ACL.size(); i++){
+            CL[i] = ACL.get(i);
+        }
+        return CL;
+    }
+    public static Shipment[] toArrayS(ArrayList<Shipment> ASL){
         Shipment[] SL = new Shipment[ASL.size()];
         for(int i = 0; i< ASL.size(); i++){
             SL[i] = ASL.get(i);
@@ -251,14 +277,14 @@ public class Main {
                 Date Date = formatter.parse(DateString);
                 String SLC = data[1];
                 double Weight = Double.parseDouble(data[2]);
-                double Nb = Double.parseDouble(data[3]);
+               //double Nb = Double.parseDouble(data[3]);
                 double Volume = Double.parseDouble(data[4]);
                 double ClusterLat = Double.parseDouble(data[5]);
                 double ClusterLong = Double.parseDouble(data[6]);
                 double OriginLat = Double.parseDouble(data[7]);
                 double OriginLong = Double.parseDouble(data[8]);
 
-                shipList[i] = new Shipment(Date, SLC, Weight, Nb, Volume, ClusterLat, ClusterLong, OriginLat, OriginLong);
+                shipList[i] = new Shipment(Date, SLC, Weight, Volume, ClusterLat, ClusterLong, OriginLat, OriginLong);
 
                 i++;
             }
