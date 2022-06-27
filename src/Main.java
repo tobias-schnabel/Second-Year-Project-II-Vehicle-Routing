@@ -32,15 +32,15 @@ public class Main {
 
         ArrayList<Date> dateList = genDateList(ShipList);
         double[][] distanceMatrix = createDistanceMatrix(CustomerList);
-        for(int i = 0; i < dateList.size(); i++) {
-           System.out.println("The solution on date " + i);
-            solve(distanceMatrix, dateList.get(i), ShipList, CustomerList);
+        for (Date date : dateList) {
+            System.out.println("The solution on " + simpleDateFormat.format(date));
+            solve(distanceMatrix, date, ShipList, CustomerList);
             System.out.println();
         }
     }
 
     public static void solve(double[][] dMatrix, Date date, Shipment[] SL,Customer[] CL){
-
+        long st = System.currentTimeMillis(); //get start time
         //start with one truck
         double TFC = 0; double TVC = 0;
         double FC = 450; double VC = 1.5;
@@ -115,12 +115,13 @@ public class Main {
             TFC += FC;
             TVC += VC*getRouteLength(t);
         }
-
-        System.out.println("Trucks and cost on the date: " + simpleDateFormat.format(date));
+        long et = System.currentTimeMillis();
         System.out.println("Number of total trucks: " + truckArrayList.size());
-        System.out.println("The cost of delivery is: "+String.format("%.2f",TFC+TVC));
+        System.out.println("Optimal cost of delivery: EUR "+String.format("%.2f",TFC+TVC));
+        System.out.println("Method executed in " + (et-st) + " milliseconds");
 
     }
+
     public static boolean inRoute(Customer next, Truck t){
         for(Customer c:t.getRoute()){
             if(c.getID().equals(next.getID())){
@@ -134,7 +135,8 @@ public class Main {
         double newDistance;
         boolean foundImprovement = true;
         ArrayList<Customer> currentRoute = t.getRoute();
-        System.out.println("Unoptimized best distance: " + bestDistance);
+        System.out.println("Truck " + (t.getTruckId()+1) + ":"); //truck IDs start at 0
+        System.out.println("Unoptimized best distance: " + String.format("%.2f",bestDistance) + " km");
 
         //until there is no more improvements
         while(foundImprovement){
@@ -156,7 +158,7 @@ public class Main {
         }
 
         t.setRoute(currentRoute);
-        System.out.println("Optimized best distance: " + bestDistance);
+        System.out.println("Optimized best distance: " + String.format("%.2f", bestDistance) + " km\n");
         return t;
     }
 
