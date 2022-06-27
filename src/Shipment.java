@@ -3,7 +3,7 @@ import java.util.*;
 public class Shipment {
     //Data has columns as follows:
     //Date | Weight | Nb | Volume | OriginCLusterLat | OriginCLusterLong | OriginLat |OriginLong
-    //TODO: Give shipment a customer instead of OriginLat OriginLong and SLC
+
     private final Date PDate;
     private final double Weight;
     private final double Volume;

@@ -7,21 +7,10 @@ import java.nio.file.*;
 //Obbe Pulles and Tobias Schnabel
 public class Main {
 
-    //TODO: in no particular order !!!LINKED LISTS!!!
-    //1. minimum cost flow? / packing of trucks?
-    //2. Local Search / neighbouring optimization
-    //3. cleanup
-    //basic idea: take truck -> go to nearest loc -> ... -> either maxvol/maxweight, repeat
-    //improve with localsearch
-
-    //add method to customer class to assign unique ID to each shipment (maybe)
-
-    //interact truck objects with customer objects (visited variable, #packages still ot be picked up)
-
     //(Tobias) extend Customers class to subclass cluster, add tally variable to verify that total # of shipments
     //up covers everything in ship list
 
-    //
+
 
     static String pattern = "dd/MM/yyyy";
     static SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
@@ -43,15 +32,17 @@ public class Main {
 
         ArrayList<Date> dateList = genDateList(ShipList);
         double[][] distanceMatrix = createDistanceMatrix(CustomerList);
-
-        solve(distanceMatrix, dateList.get(0), ShipList, CustomerList);
-
+        for(int i = 0; i < dateList.size(); i++) {
+           System.out.println("The solution on date " + i);
+            solve(distanceMatrix, dateList.get(i), ShipList, CustomerList);
+            System.out.println();
+        }
     }
 
     public static void solve(double[][] dMatrix, Date date, Shipment[] SL,Customer[] CL){
 
         //start with one truck
-        double TFC = 450; double TVC = 0;
+        double TFC = 0; double TVC = 0;
         double FC = 450; double VC = 1.5;
 
         //creates arraylist of the to be shipped shipments
@@ -63,91 +54,137 @@ public class Main {
         }
 
         //create list of trucks
-        int count = 0;
         ArrayList<Truck> truckArrayList = new ArrayList<>();
-        truckArrayList.add(new Truck(count));
-        Truck truck = truckArrayList.get(0);
-
+        int count = 0;
+        Truck truck = new Truck(count);
+        truckArrayList.add(truck);
 
         //while there are still shipments to be delivered
-        while(curShipments.size() != 0){
+       while(curShipments.size() != 0){
 
-            boolean skip = false;
-            //find the closest customer who needs a delivery
-            Customer next = getMinDistCustomer(curShipments, truck, dMatrix, CL);
-            String ID = next.getID();
+           //find the closest customer who needs a delivery
+           Customer next = getMinDistCustomer(curShipments, truck, dMatrix, CL);
+           String ID = next.getID();
 
 
-            //removes all shipments that belong to this customer from the shipment list
-            //checks whether we need a new truck and move the truck
-            for(int i = 0; i < curShipments.size(); i++){
-                //checks if shipment i belongs to the customer
-                if(curShipments.get(i).getCustomer().getID().equals(ID)){
-                    Shipment s = curShipments.get(i);
+           //removes all shipments that belong to this customer from the shipment list
+           //checks whether we need a new truck and move the truck
+           for(int i = 0; i < curShipments.size(); i++){
+               //checks if shipment i belongs to the customer
+               if(curShipments.get(i).getCustomer().getID().equals(ID)){
+                   Shipment s = curShipments.get(i);
 
-                    //if either w>22000 or v>82 would happen, add new truck to trucklist
-                    if(s.getWeight() + truck.getCurrentWeight() > 22000 || s.getVolume() + truck.getCurrentVolume()>82){
+                   //if either w>22000 or v>82 would happen, add new truck to trucklist and start from cluster
+                   if(s.getWeight() + truck.getCurrentWeight() > 22000 || s.getVolume() + truck.getCurrentVolume() > 82){
 
-                        count++;
-                        truckArrayList.add(new Truck(count));
-                        truck = truckArrayList.get(truckArrayList.size()-1);
-                        TFC+=FC;
-                        //get out of for-loop to find minDistCustomer for new truck
-                        skip = true;
-                        break;
+                       count++;
+                       truckArrayList.add(new Truck(count));
+                       truck = truckArrayList.get(truckArrayList.size()-1);
+                       //get out of for-loop to find minDistCustomer for new truck
+                       break;
 
-                    }//close new truck if
+                   }//close new truck if
 
-                    truck.addVolume(s.getVolume());
-                    truck.addWeight(s.getWeight());
-                    truck.addShipment(s);
+                   truck.addVolume(s.getVolume());
+                   truck.addWeight(s.getWeight());
+                   truck.addShipment(s);
 
-                    curShipments.remove(i);
-                    i--;
-                }//close shipment if
-            }//close for-loop
-            if(!skip) {
-                TVC += VC * next.distance(truck.getRoute().get(truck.getRoute().size() - 1));
-                truck.addToRoute(next);
-            }
+                   curShipments.remove(i);
+                   //put the location of the customer into the route of the truck if it's not already in there
+                   if(!inRoute(next,truck)){
+                       truck.addToRoute(next);
+                   }
+                   i--;
+               }//close shipment if
+           }//close for-loop
 
-        }
+       }
 
-        //make all trucks go back to cluster
+       //make all trucks go back to cluster
+       for(Truck t: truckArrayList){
+           t.addToRoute(CL[0]);
+       }
+
+     // TODO BASIC IDEA OF IMPROVING:
+     // Step 1: take all trucks in the current list
+     // Step 3: LOCALSEARCH: Move
+     // Step 4: LOCALSEARCH: Swap
+
+        //2-opt exchange
         for(Truck t: truckArrayList){
-            Customer last = t.getEnd();
-            t.addToRoute(CL[0]);
-            TVC += VC*last.distance(CL[0]);
+           t = do2optExchange(t);
+            TFC += FC;
+            TVC += VC*getRouteLength(t);
         }
-
-      // TODO BASIC IDEA OF IMPROVING:
-      // Step 1: take all trucks in the current list
-      // Step 2: LOCALSEARCH: 2-opt-exchange
-      // Step 3: LOCALSEARCH: Move
-      // Step 4: LOCALSEARCH: Swap
-
-
-        truckArrayList = improve(truckArrayList);
-
 
         System.out.println("Trucks and cost on the date: " + simpleDateFormat.format(date));
         System.out.println("Number of total trucks: " + truckArrayList.size());
         System.out.println("The cost of delivery is: "+String.format("%.2f",TFC+TVC));
 
     }
-
-    public static ArrayList<Truck> improve(ArrayList<Truck> TL){
-        double tl = 0;
-        for(Truck t: TL){
-            tl += getRouteLength(t);
-            System.out.println(tl);
-
-
-
+    public static boolean inRoute(Customer next, Truck t){
+        for(Customer c:t.getRoute()){
+            if(c.getID().equals(next.getID())){
+                return true;
+            }
         }
-        return TL;
+        return false;
+    }
+    public static Truck do2optExchange(Truck t){
+        double bestDistance = getRouteLength(t);
+        double newDistance;
+        boolean foundImprovement = true;
+        ArrayList<Customer> currentRoute = t.getRoute();
+        System.out.println("Unoptimized best distance: " + bestDistance);
+
+        //until there is no more improvements
+        while(foundImprovement){
+            foundImprovement = false;
+            //do not change the positions of the start and end nodes
+            for(int i = 1; i < t.getRoute().size()-2; i++){
+                for(int j = i+1; j < t.getRoute().size()-1; j++){
+                //this is not the most efficient it can be but not too bad
+                ArrayList<Customer> newRoute = Swap(currentRoute,i , j);
+                newDistance = getDist(newRoute);
+                //update the best distance and current route if we have found a 2-opt exhange which improves on the current route
+                if(newDistance < bestDistance){
+                        bestDistance = newDistance;
+                        currentRoute = newRoute;
+                        foundImprovement = true;
+                    }
+                }
+            }
+        }
+
+        t.setRoute(currentRoute);
+        System.out.println("Optimized best distance: " + bestDistance);
+        return t;
     }
 
+    public static double getDist(ArrayList<Customer> CL){
+        Customer[] route = toArrayC(CL);
+        double dist = 0;
+        for(int i = 1; i < route.length; i++){
+            dist += route[i-1].distance(route[i]);
+        }
+        return dist;
+    }
+    public static ArrayList<Customer> Swap(ArrayList<Customer> route, int i, int j) {
+        ArrayList<Customer> newRoute = new ArrayList<>();
+        for (int k = 0; k < i; k++) {
+            newRoute.add(route.get(k));
+        }
+        int num = 0;
+        for(int k = i; k <= j; k++){
+            newRoute.add(k,route.get(j-num));
+            num++;
+        }
+        for(int k = j+1; k < route.size();k++){
+            newRoute.add(route.get(k));
+        }
+
+        return newRoute;
+    }
     public static double getRouteLength(Truck t){
         Customer[] route = toArrayC(t.getRoute());
         double d = 0;
@@ -195,7 +232,7 @@ public class Main {
 
         return CL[minPos];
     }//close method
-    public static Customer[] toArrayC(LinkedList<Customer> ACL){
+    public static Customer[] toArrayC(ArrayList<Customer> ACL){
         Customer[] CL = new Customer[ACL.size()];
         for(int i = 0; i< ACL.size(); i++){
             CL[i] = ACL.get(i);
