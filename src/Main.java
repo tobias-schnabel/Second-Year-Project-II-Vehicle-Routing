@@ -106,7 +106,6 @@ public class Main {
        }
 
      // TODO BASIC IDEA OF IMPROVING:
-     // Step 1: take all trucks in the current list
      // Step 3: LOCALSEARCH: Move
      // Step 4: LOCALSEARCH: Swap
 
