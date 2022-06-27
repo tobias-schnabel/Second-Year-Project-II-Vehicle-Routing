@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class Truck {
 
@@ -6,7 +7,7 @@ public class Truck {
     private double currentVolume = 0;
     private final int truckId;
     private final ArrayList<Shipment> shipments = new ArrayList<>();
-    private final ArrayList<Customer> route = new ArrayList<>();
+    private final LinkedList<Customer> route = new LinkedList<>();
 
     public Truck(int num){
         Customer start = new Customer(43.6206051062346, 1.39423144268438, "0",0);
@@ -25,7 +26,7 @@ public class Truck {
     public double getCurrentVolume(){
         return this.currentVolume;
     }
-    public ArrayList<Customer> getRoute(){
+    public LinkedList<Customer> getRoute(){
         return this.route;
     }
     public void addShipment(Shipment s){

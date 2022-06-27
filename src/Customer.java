@@ -13,6 +13,11 @@ public class Customer {
         this.ID = ID;
         this.numShip = num;
     }
+    public Customer(double lat, double lon, String ID){
+        this.lat = lat;
+        this.lon = lon;
+        this.ID = ID;
+    }
     public Customer(String ID) {
         this.lat = 0;
         this.lon = 0;

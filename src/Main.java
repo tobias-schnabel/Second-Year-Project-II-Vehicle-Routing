@@ -82,7 +82,7 @@ public class Main {
             //checks whether we need a new truck and move the truck
             for(int i = 0; i < curShipments.size(); i++){
                 //checks if shipment i belongs to the customer
-                if(curShipments.get(i).getSLC().equals(ID)){
+                if(curShipments.get(i).getCustomer().getID().equals(ID)){
                     Shipment s = curShipments.get(i);
 
                     //if either w>22000 or v>82 would happen, add new truck to trucklist
@@ -195,7 +195,7 @@ public class Main {
 
         return CL[minPos];
     }//close method
-    public static Customer[] toArrayC(ArrayList<Customer> ACL){
+    public static Customer[] toArrayC(LinkedList<Customer> ACL){
         Customer[] CL = new Customer[ACL.size()];
         for(int i = 0; i< ACL.size(); i++){
             CL[i] = ACL.get(i);
@@ -220,9 +220,9 @@ public class Main {
         for (int i = 1; i < customerList.length; i++) {
             customerList[i] = new Customer(uniqueCust[i -1]);
             for(Shipment ship : ShipList) {
-                if(customerList[i].getID().equals(ship.getSLC())) {
-                    customerList[i].setLat(ship.getOriginLat());
-                    customerList[i].setLon(ship.getOriginLong());
+                if(customerList[i].getID().equals(ship.getCustomer().getID())) {
+                    customerList[i].setLat(ship.getCustomer().getLat());
+                    customerList[i].setLon(ship.getCustomer().getLon());
                     customerList[i].incrementNum();
                 } //if
             } //inner for
