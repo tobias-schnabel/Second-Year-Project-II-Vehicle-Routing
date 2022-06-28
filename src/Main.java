@@ -1,3 +1,4 @@
+import javax.lang.model.type.ArrayType;
 import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -6,12 +7,6 @@ import java.nio.file.*;
 
 //Obbe Pulles and Tobias Schnabel
 public class Main {
-
-    //(Tobias) extend Customers class to subclass cluster, add tally variable to verify that total # of shipments
-    //up covers everything in ship list
-
-
-
     static String pattern = "dd/MM/yyyy";
     static SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 
@@ -110,10 +105,28 @@ public class Main {
      // Step 4: LOCALSEARCH: Swap
 
         //2-opt exchange
+        for(Truck t: truckArrayList) {
+            t = do2optExchange(t);
+        }
+
+      if(truckArrayList.size() > 1) {
+          for (Truck truck_1 : truckArrayList) {
+              for (Truck truck_2 : truckArrayList) {
+                  if(!truck_1.equals(truck_2)) {
+                      Truck[] list = doLocalSearchMove(truck_1, truck_2);
+                      truck_1 = list[0];
+                      truck_2 = list[1];
+                  }
+              }
+          }
+      }
+
+
         for(Truck t: truckArrayList){
-           t = do2optExchange(t);
-            TFC += FC;
-            TVC += VC*getRouteLength(t);
+            if(t.getShipments().size() != 0) {
+                TFC += FC;
+                TVC += VC * getRouteLength(t);
+            }
         }
 
         System.out.println("Trucks and cost on the date: " + simpleDateFormat.format(date));
@@ -121,6 +134,93 @@ public class Main {
         System.out.println("The cost of delivery is: "+String.format("%.2f",TFC+TVC));
 
     }
+    public static Truck[] doLocalSearchMove(Truck truck1, Truck truck2){
+        //idea is to move shipment(s) from truck 2 to truck 1
+        double bestDistances = getRouteLength(truck1) + getRouteLength(truck2);
+        double newDistances;
+        boolean foundImprovement = true;
+        System.out.println("Before LSmove: " + bestDistances);
+
+        double curWeight = truck1.getCurrentWeight();
+        double curVol = truck1.getCurrentVolume();
+
+        ArrayList<Customer> route1 = truck1.getRoute();
+        ArrayList<Customer> route2 = truck2.getRoute();
+
+        while(foundImprovement){
+            foundImprovement = false;
+
+            for(int i = 1; i<route1.size()-1; i++){
+                ArrayList<Customer> newRoute1 = route1;
+                for(int j = 1; j < route2.size()-1; j++){
+
+                    ArrayList<Customer> newRoute2 = route2;
+                    Customer curr = newRoute2.get(j);
+                    //add the customer in the route for truck 1 at position i
+                    newRoute1.add(i, curr);
+                    //remove the customer from route for truck2
+                    newRoute2.remove(curr);
+
+                    boolean revert = true;
+                    //if the new route by moving customer j from route 2 to route 1 in position i is smaller
+                    if(getDist(newRoute1) + getDist(newRoute2) < bestDistances){
+                        revert = false;
+                        double w = 0;
+                        double v = 0;
+                        //sum up the weight and volume of all shipments to be delivered to that customer
+                        for(Shipment s: truck2.getShipments()){
+                            if(s.getCustomer().getID().equals(curr.getID())){
+                                w += s.getWeight();
+                                v += s.getVolume();
+                            }
+                        }
+                        //if we add the weight and volume to truck 1 and no constraints are violated
+                        if(curWeight + w < 22000 && curVol + v < 82) {
+                            //add all shipments to truck 1 for the customer from truck 2
+                            for (int p = 0; p < truck2.getShipments().size(); p++){
+                                Shipment s = truck2.getShipments().get(p);
+                                if (s.getCustomer().getID().equals(curr.getID())) {
+                                    truck2.removeShipment(s);
+                                    truck1.addShipment(s);
+                                    p--;
+                                }
+                            }
+                            //update the truck's new weight and volume
+                            truck1.addWeight(w);
+                            truck1.addVolume(v);
+                            truck2.addWeight(-w);
+                            truck2.addVolume(-v);
+
+                            //set the new thresholds and update routes
+                            foundImprovement = true;
+                            bestDistances = getDist(newRoute1) + getDist(newRoute2);
+                            route1 = newRoute1;
+                            route2 = newRoute2;
+                            j--;
+                            System.out.println("Improvement found");
+                        }
+                        else{
+                            revert = true;
+                        }
+                    }
+
+                    if(revert){
+                        newRoute1.remove(curr);
+                        newRoute2.add(j, curr);
+                    }
+                }
+            }
+        }
+        Truck[] trucklist = new Truck[2];
+        System.out.println("After LSmove: " + bestDistances);
+        truck1.setRoute(route1);
+        truck2.setRoute(route2);
+
+        trucklist[0] = truck1;
+        trucklist[1] = truck2;
+        return trucklist;
+    }
+
     public static boolean inRoute(Customer next, Truck t){
         for(Customer c:t.getRoute()){
             if(c.getID().equals(next.getID())){
@@ -142,8 +242,8 @@ public class Main {
             //do not change the positions of the start and end nodes
             for(int i = 1; i < t.getRoute().size()-2; i++){
                 for(int j = i+1; j < t.getRoute().size()-1; j++){
-                //this is not the most efficient it can be but not too bad
-                ArrayList<Customer> newRoute = Swap(currentRoute,i , j);
+                //currently in O(n) but can probably be done in O(1)
+                ArrayList<Customer> newRoute = Swap(currentRoute, i, j);
                 newDistance = getDist(newRoute);
                 //update the best distance and current route if we have found a 2-opt exhange which improves on the current route
                 if(newDistance < bestDistance){
@@ -156,7 +256,7 @@ public class Main {
         }
 
         t.setRoute(currentRoute);
-        System.out.println("Optimized best distance: " + bestDistance);
+        System.out.println("After 2opt: " + bestDistance);
         return t;
     }
 

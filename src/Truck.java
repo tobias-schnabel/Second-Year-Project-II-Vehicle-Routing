@@ -45,6 +45,9 @@ public class Truck {
     public void addShipment(Shipment s) {
         shipments.add(s);
     }
+    public void removeShipment(Shipment s) {
+        shipments.remove(s);
+    }
 
     public void addToRoute(Customer c) {
         this.route.add(c);
