@@ -33,7 +33,6 @@ public class Truck {
     public void setRoute(ArrayList<Customer> route) {
         this.route = route;
     }
-
     public ArrayList<Customer> getRoute() {
         return this.route;
     }
