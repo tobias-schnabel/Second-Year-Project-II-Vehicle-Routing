@@ -101,7 +101,6 @@ public class Main {
        }
 
      // TODO BASIC IDEA OF IMPROVING:
-     // Step 3: LOCALSEARCH: Move
      // Step 4: LOCALSEARCH: Swap
 
         //2-opt exchange
