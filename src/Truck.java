@@ -61,4 +61,8 @@ public class Truck {
         int n = this.route.size();
         return this.route.get(n - 1).getID();
     }
+
+    public int getTruckId() {
+        return truckId;
+    }
 }
