@@ -220,7 +220,6 @@ public class Main {
         trucklist[1] = truck2;
         return trucklist;
     }
-
     public static boolean inRoute(Customer next, Truck t){
         for(Customer c:t.getRoute()){
             if(c.getID().equals(next.getID())){
