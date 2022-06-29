@@ -95,26 +95,25 @@ public class Main {
 
        }
 
+       double totalCostBefore = 0;
        //make all trucks go back to cluster
        for(Truck t: truckArrayList){
            t.addToRoute(CL[0]);
+           totalCostBefore += FC + VC * getRouteLength(t);
        }
-
-     // TODO BASIC IDEA OF IMPROVING:
-     // Step 4: LOCALSEARCH: Swap
-
+       System.out.println("Total cost before optimization: " + String.format("%.2f",totalCostBefore));
         //2-opt exchange
         for(Truck t: truckArrayList) {
             t = do2optExchange(t);
         }
 
       if(truckArrayList.size() > 1) {
-          for (Truck truck_1 : truckArrayList) {
-              for (Truck truck_2 : truckArrayList) {
-                  if(!truck_1.equals(truck_2)) {
-                      Truck[] list = doLocalSearchMove(truck_1, truck_2);
-                      truck_1 = list[0];
-                      truck_2 = list[1];
+          for (int i = 0; i < truckArrayList.size(); i++) {
+              for (int j = 0; j< truckArrayList.size(); j++) {
+                  if(i != j) {
+                      Truck[] list = doLocalSearchMove(truckArrayList.get(i), truckArrayList.get(j));
+                      truckArrayList.set(i, list[0]);
+                      truckArrayList.set(j, list[1]);
                   }
               }
           }
@@ -135,34 +134,32 @@ public class Main {
     }
     public static Truck[] doLocalSearchMove(Truck truck1, Truck truck2){
         //idea is to move shipment(s) from truck 2 to truck 1
-        double bestDistances = getRouteLength(truck1) + getRouteLength(truck2);
+
         double newDistances;
         boolean foundImprovement = true;
-        System.out.println("Before LSmove: " + bestDistances);
 
         double curWeight = truck1.getCurrentWeight();
         double curVol = truck1.getCurrentVolume();
 
         ArrayList<Customer> route1 = truck1.getRoute();
         ArrayList<Customer> route2 = truck2.getRoute();
+        double bestDistances = getDist(route1) + getDist(route2);
+       // System.out.println("Before LSmove: " + bestDistances);
 
         while(foundImprovement){
             foundImprovement = false;
-
             for(int i = 1; i<route1.size()-1; i++){
-                ArrayList<Customer> newRoute1 = route1;
                 for(int j = 1; j < route2.size()-1; j++){
 
-                    ArrayList<Customer> newRoute2 = route2;
-                    Customer curr = newRoute2.get(j);
+                    Customer curr = route2.get(j);
                     //add the customer in the route for truck 1 at position i
-                    newRoute1.add(i, curr);
-                    //remove the customer from route for truck2
-                    newRoute2.remove(curr);
+                    route1.add(i, curr);
+                    route2.remove(j);
 
                     boolean revert = true;
+                    newDistances = getDist(route1) + getDist(route2);
                     //if the new route by moving customer j from route 2 to route 1 in position i is smaller
-                    if(getDist(newRoute1) + getDist(newRoute2) < bestDistances){
+                    if(newDistances < bestDistances){
                         revert = false;
                         double w = 0;
                         double v = 0;
@@ -192,26 +189,23 @@ public class Main {
 
                             //set the new thresholds and update routes
                             foundImprovement = true;
-                            bestDistances = getDist(newRoute1) + getDist(newRoute2);
-                            route1 = newRoute1;
-                            route2 = newRoute2;
+                            bestDistances = newDistances;
                             j--;
-                            System.out.println("Improvement found");
                         }
                         else{
                             revert = true;
                         }
                     }
-
                     if(revert){
-                        newRoute1.remove(curr);
-                        newRoute2.add(j, curr);
+                        route1.remove(i);
+                        route2.add(j, curr);
+                        revert = false;
                     }
                 }
             }
         }
         Truck[] trucklist = new Truck[2];
-        System.out.println("After LSmove: " + bestDistances);
+       // System.out.println("After LSmove: " + bestDistances);
         truck1.setRoute(route1);
         truck2.setRoute(route2);
 
@@ -232,7 +226,7 @@ public class Main {
         double newDistance;
         boolean foundImprovement = true;
         ArrayList<Customer> currentRoute = t.getRoute();
-        System.out.println("Unoptimized best distance: " + bestDistance);
+        //System.out.println("Unoptimized best distance: " + bestDistance);
 
         //until there is no more improvements
         while(foundImprovement){
@@ -254,15 +248,15 @@ public class Main {
         }
 
         t.setRoute(currentRoute);
-        System.out.println("After 2opt: " + bestDistance);
+        //System.out.println("After 2opt: " + bestDistance);
         return t;
     }
 
     public static double getDist(ArrayList<Customer> CL){
-        Customer[] route = toArrayC(CL);
+
         double dist = 0;
-        for(int i = 1; i < route.length; i++){
-            dist += route[i-1].distance(route[i]);
+        for(int i = 1; i < CL.size(); i++){
+            dist += CL.get(i).distance(CL.get(i-1));
         }
         return dist;
     }
@@ -283,12 +277,8 @@ public class Main {
         return newRoute;
     }
     public static double getRouteLength(Truck t){
-        Customer[] route = toArrayC(t.getRoute());
-        double d = 0;
-        for(int i = 1; i < route.length; i++){
-            d += route[i].distance(route[i-1]);
-        }
-        return d;
+        return getDist(t.getRoute());
+
     }
     public static Customer getMinDistCustomer(ArrayList<Shipment> CSL, Truck t, double[][] matrix, Customer[] CL){
 
@@ -296,7 +286,7 @@ public class Main {
         int loc = -1;
 
         Customer[] currentCL = getCustomers(toArrayS(CSL));
-        //get location of truck to use in distance matrix
+        //get index of location of truck to use in distance matrix
         for(int i = 0; i < CL.length; i++){
             if(CL[i].getID().equals(locString)){
                 loc = i;
