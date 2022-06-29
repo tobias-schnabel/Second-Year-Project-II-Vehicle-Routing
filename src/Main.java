@@ -1,4 +1,3 @@
-import javax.lang.model.type.ArrayType;
 import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -136,15 +135,17 @@ public class Main {
        }
 
         //get the total cost
+        count = 0;
         for(Truck t: truckArrayList){
             if(t.getShipments().size() != 0) {
                 TFC += FC;
                 TVC += VC * getRouteLength(t);
+                count++;
             }
         }
 
         System.out.println("Trucks and cost on the date: " + simpleDateFormat.format(date));
-        System.out.println("Number of total trucks: " + truckArrayList.size());
+        System.out.println("Number of total trucks: " + count);
         System.out.println("The cost of delivery is: "+String.format("%.2f",TFC+TVC));
 
     }
@@ -236,7 +237,7 @@ public class Main {
         }
         return false;
     }
-    public static Truck do2optExchange(Truck t){
+    public static void do2optExchange(Truck t){
         double bestDistance = getRouteLength(t);
         double newDistance;
         boolean foundImprovement = true;
@@ -264,7 +265,6 @@ public class Main {
 
         t.setRoute(currentRoute);
         //System.out.println("After 2opt: " + bestDistance);
-        return t;
     }
 
     public static double getDist(ArrayList<Customer> CL){
