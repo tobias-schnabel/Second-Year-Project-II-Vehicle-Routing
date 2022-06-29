@@ -78,7 +78,7 @@ public class Truck {
         for (int  i = 0; i < customers.length; i++) {
             customers[i] = route.get(i).getID();
         }
-        System.out.print("Route: Cluster ->" );
+        System.out.print("Route: Cluster >" );
         for (int i = 1; i < customers.length -1 ; i++) {
             System.out.print(customers[i].replace('"',' ') + ">");
         }
