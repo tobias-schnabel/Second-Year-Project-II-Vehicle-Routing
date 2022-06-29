@@ -102,24 +102,40 @@ public class Main {
            totalCostBefore += FC + VC * getRouteLength(t);
        }
        System.out.println("Total cost before optimization: " + String.format("%.2f",totalCostBefore));
-        //2-opt exchange
-        for(Truck t: truckArrayList) {
-            t = do2optExchange(t);
-        }
+       boolean improvement = true;
 
-      if(truckArrayList.size() > 1) {
-          for (int i = 0; i < truckArrayList.size(); i++) {
-              for (int j = 0; j< truckArrayList.size(); j++) {
-                  if(i != j) {
-                      Truck[] list = doLocalSearchMove(truckArrayList.get(i), truckArrayList.get(j));
-                      truckArrayList.set(i, list[0]);
-                      truckArrayList.set(j, list[1]);
-                  }
-              }
-          }
-      }
+       //after each improvement, check whether new improvements can be made
+       while(improvement) {
+           improvement = false;
+           //2-opt exchange
+           for (Truck t : truckArrayList) {
+               ArrayList<Customer> oldRoute = t.getRoute();
+               do2optExchange(t);
+               if (!oldRoute.equals(t.getRoute())) {
+                   improvement = true;
+               }
+           }
 
+           if (truckArrayList.size() > 1) {
+               for (int i = 0; i < truckArrayList.size(); i++) {
+                   for (int j = 0; j < truckArrayList.size(); j++) {
+                       if (i != j) {
+                           ArrayList<Customer> oldRoute_i = truckArrayList.get(i).getRoute();
+                           ArrayList<Customer> oldRoute_j = truckArrayList.get(j).getRoute();
+                           Truck[] list = doLocalSearchMove(truckArrayList.get(i), truckArrayList.get(j));
+                           truckArrayList.set(i, list[0]);
+                           truckArrayList.set(j, list[1]);
 
+                           if(!oldRoute_i.equals(truckArrayList.get(i).getRoute()) && !oldRoute_j.equals(truckArrayList.get(j).getRoute())){
+                               improvement = true;
+                           }
+                       }
+                   }
+               }
+           }
+       }
+
+        //get the total cost
         for(Truck t: truckArrayList){
             if(t.getShipments().size() != 0) {
                 TFC += FC;
@@ -199,7 +215,6 @@ public class Main {
                     if(revert){
                         route1.remove(i);
                         route2.add(j, curr);
-                        revert = false;
                     }
                 }
             }
@@ -319,13 +334,6 @@ public class Main {
 
         return CL[minPos];
     }//close method
-    public static Customer[] toArrayC(ArrayList<Customer> ACL){
-        Customer[] CL = new Customer[ACL.size()];
-        for(int i = 0; i< ACL.size(); i++){
-            CL[i] = ACL.get(i);
-        }
-        return CL;
-    }
     public static Shipment[] toArrayS(ArrayList<Shipment> ASL){
         Shipment[] SL = new Shipment[ASL.size()];
         for(int i = 0; i< ASL.size(); i++){
