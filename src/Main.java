@@ -26,10 +26,17 @@ public class Main {
 
         ArrayList<Date> dateList = genDateList(ShipList);
         double[][] distanceMatrix = createDistanceMatrix(CustomerList);
-        for(int i = 0; i < dateList.size(); i++) {
-           System.out.println("The solution on date " + i);
-            solve(distanceMatrix, dateList.get(i), ShipList, CustomerList);
-            System.out.println();
+//        for(int i = 0; i < dateList.size(); i++) {
+//           System.out.println("Date #" + (i=1) );
+//            solve(distanceMatrix, dateList.get(i), ShipList, CustomerList);
+//            System.out.println();
+//        }
+
+        int counter = 1;
+        for (Date date : dateList) {
+            System.out.println("Date #" + counter + ": " + simpleDateFormat.format(date) );
+            solve(distanceMatrix, date, ShipList, CustomerList);
+            counter++;
         }
     }
 
@@ -144,9 +151,8 @@ public class Main {
             }
         }
 
-        System.out.println("Trucks and cost on the date: " + simpleDateFormat.format(date));
-        System.out.println("Number of total trucks: " + count);
-        System.out.println("The cost of delivery is: "+String.format("%.2f",TFC+TVC));
+        System.out.println("Optimal Total cost : "+String.format("%.2f",TFC+TVC));
+        System.out.println("Number of trucks used: " + count + "\n");
 
     }
     public static Truck[] doLocalSearchMove(Truck truck1, Truck truck2){
@@ -161,7 +167,8 @@ public class Main {
         ArrayList<Customer> route1 = truck1.getRoute();
         ArrayList<Customer> route2 = truck2.getRoute();
         double bestDistances = getDist(route1) + getDist(route2);
-       // System.out.println("Before LSmove: " + bestDistances);
+//        System.out.println("Initial feasible distance: " + String.format("%.2f", bestDistances));
+//        System.out.println("Before LSmove: " + bestDistances);
 
         while(foundImprovement){
             foundImprovement = false;
@@ -242,7 +249,7 @@ public class Main {
         double newDistance;
         boolean foundImprovement = true;
         ArrayList<Customer> currentRoute = t.getRoute();
-        //System.out.println("Unoptimized best distance: " + bestDistance);
+//        System.out.println("Unoptimized best distance: " + bestDistance);
 
         //until there is no more improvements
         while(foundImprovement){
