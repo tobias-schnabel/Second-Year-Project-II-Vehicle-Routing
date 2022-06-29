@@ -1,4 +1,6 @@
+import javax.swing.text.html.CSS;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Truck {
 
@@ -63,5 +65,23 @@ public class Truck {
 
     public int getTruckId() {
         return truckId;
+    }
+
+    public void printSolution() {
+        System.out.print("Truck #" + (this.getTruckId() + 1) + ": ");
+        System.out.print("Weight: " + String.format("%.1f",(this.getCurrentWeight()/1000)) + "/22 ");
+        System.out.print("Volume: " + String.format("%.2f",this.getCurrentVolume()) + "/82 \n");
+
+        ArrayList<Customer> route = this.getRoute();
+        String[] customers = new String[route.size()];
+        int counter = 0;
+        for (int  i = 0; i < customers.length; i++) {
+            customers[i] = route.get(i).getID();
+        }
+        System.out.print("Route: Cluster ->" );
+        for (int i = 1; i < customers.length -1 ; i++) {
+            System.out.print(customers[i].replace('"',' ') + ">");
+        }
+        System.out.println(" Cluster \n");
     }
 }

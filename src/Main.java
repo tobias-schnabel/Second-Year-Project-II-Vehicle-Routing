@@ -26,14 +26,10 @@ public class Main {
 
         ArrayList<Date> dateList = genDateList(ShipList);
         double[][] distanceMatrix = createDistanceMatrix(CustomerList);
-//        for(int i = 0; i < dateList.size(); i++) {
-//           System.out.println("Date #" + (i=1) );
-//            solve(distanceMatrix, dateList.get(i), ShipList, CustomerList);
-//            System.out.println();
-//        }
 
         int counter = 1;
         for (Date date : dateList) {
+            System.out.println("##########################################################");
             System.out.println("Date #" + counter + ": " + simpleDateFormat.format(date) );
             solve(distanceMatrix, date, ShipList, CustomerList);
             counter++;
@@ -66,7 +62,6 @@ public class Main {
            //find the closest customer who needs a delivery
            Customer next = getMinDistCustomer(curShipments, truck, dMatrix, CL);
            String ID = next.getID();
-
 
            //removes all shipments that belong to this customer from the shipment list
            //checks whether we need a new truck and move the truck
@@ -107,7 +102,7 @@ public class Main {
            t.addToRoute(CL[0]);
            totalCostBefore += FC + VC * getRouteLength(t);
        }
-       System.out.println("Total cost before optimization: " + String.format("%.2f",totalCostBefore));
+       System.out.println("Total cost of the feasible basic solution: " + String.format("%.2f",totalCostBefore) + " EUR");
        boolean improvement = true;
 
        //after each improvement, check whether new improvements can be made
@@ -151,9 +146,13 @@ public class Main {
             }
         }
 
-        System.out.println("Optimal Total cost : "+String.format("%.2f",TFC+TVC));
-        System.out.println("Number of trucks used: " + count + "\n");
+        for(Truck t: truckArrayList) {
+            t.printSolution();
+        }
 
+        System.out.println("Optimal Total cost : "+ String.format("%.2f",TFC+TVC) + " EUR");
+        System.out.println("Number of trucks used: " + count);
+        System.out.println("##########################################################" + "\n");
     }
     public static Truck[] doLocalSearchMove(Truck truck1, Truck truck2){
         //idea is to move shipment(s) from truck 2 to truck 1
