@@ -37,7 +37,8 @@ public class Main {
     }
 
     public static void solve(double[][] dMatrix, Date date, Shipment[] SL,Customer[] CL){
-
+        //timing
+        Long st = System.currentTimeMillis();
         //start with one truck
         double TFC = 0; double TVC = 0;
         double FC = 450; double VC = 1.5;
@@ -103,6 +104,9 @@ public class Main {
            totalCostBefore += FC + VC * getRouteLength(t);
        }
        System.out.println("Total cost of the feasible basic solution: " + String.format("%.2f",totalCostBefore) + " EUR");
+
+       Long it = System.currentTimeMillis();
+
        boolean improvement = true;
 
        //after each improvement, check whether new improvements can be made
@@ -150,8 +154,12 @@ public class Main {
             t.printSolution();
         }
 
+        Long et = System.currentTimeMillis();
         System.out.println("Optimal Total cost : "+ String.format("%.2f",TFC+TVC) + " EUR");
         System.out.println("Number of trucks used: " + count);
+        System.out.println("Method executed in " + (et-st) + " milliseconds, of which");
+        System.out.println("Obtaining the feasible basic solution took " + (it-st) + " ms");
+        System.out.println("Optimizing the basic solution took " + (et-it) + " ms");
         System.out.println("##########################################################" + "\n");
     }
     public static Truck[] doLocalSearchMove(Truck truck1, Truck truck2){
