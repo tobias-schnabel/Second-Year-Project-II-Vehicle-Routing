@@ -20,7 +20,6 @@ public class Truck {
         this.route.add(start);
         this.truckId = num;
     }
-
     public void addWeight(double w) {
         this.currentWeight += w;
     }
@@ -58,20 +57,13 @@ public class Truck {
     public void addToRoute(Customer c) {
         this.route.add(c);
     }
-
-    public Customer getEnd() {
-        return this.route.get(this.route.size() - 1);
-    }
-
     public String getLocation() {
         int n = this.route.size();
         return this.route.get(n - 1).getID();
     }
-
     public int getTruckId() {
         return truckId;
     }
-
     public void printSolution() {
         System.out.print("Truck #" + (this.getTruckId() + 1) + ": ");
         System.out.print("Weight: " + String.format("%.1f",(this.getCurrentWeight()/1000)) + "/22 ");
@@ -79,7 +71,6 @@ public class Truck {
 
         ArrayList<Customer> route = this.getRoute();
         String[] customers = new String[route.size()];
-        int counter = 0;
         for (int  i = 0; i < customers.length; i++) {
             customers[i] = route.get(i).getID();
         }

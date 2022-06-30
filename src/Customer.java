@@ -44,31 +44,24 @@ public class Customer {
     public double getLat() {
         return lat;
     }
-
     public void setLat(double lat) {
         this.lat = lat;
     }
-
     public double getLon() {
         return lon;
     }
-
     public void setLon(double lon) {
         this.lon = lon;
     }
-
     public String getID() {
         return ID;
     }
-
     public void incrementNum() {
         this.numShip += 1;
     }
-
     public void setNumShip(int numShip) {
         this.numShip = numShip;
     }
-
     @Override
     public String toString() {
         return "Customer{" +

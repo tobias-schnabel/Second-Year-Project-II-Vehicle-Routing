@@ -12,9 +12,9 @@ import java.nio.file.*;
 //NOTE: we separate the dates of shipments, we don't provide 10 different .txt files, only 1.
 
 public class Main {
+
     static String pattern = "dd/MM/yyyy";
     static SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-
     private static int numLinesInInput = 0;
 
     public static void main (String[] args) {

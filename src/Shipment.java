@@ -16,6 +16,7 @@ public class Shipment {
     private final double OriginClusterLat;
     private final double OriginClusterLong;
     private final Customer customer;
+
     public Shipment(Date PUDate, String SLC, double W, double V, double OClat, double OClong, double Olat, double Olong){
        this.PDate = PUDate;
        this.Weight = W;
@@ -24,7 +25,6 @@ public class Shipment {
        this.OriginClusterLong = OClong;
        this.customer = new Customer(Olat, Olong, SLC);
     }
-
     public double distance(){
         double r = 6372.8;
         double dLat = Math.toRadians(this.OriginClusterLat - this.customer.getLat());
@@ -37,15 +37,11 @@ public class Shipment {
 
         return r*c;
     }
-
     public Date getPDate() {
         return this.PDate;
     }
     public double getWeight() { return this.Weight; }
     public double getVolume() { return this.Volume; }
-//    public double getOriginLat() {return this.OriginLat;}
-//    public double getOriginLong() {return this.OriginLong;}
-
     public Customer getCustomer() {
         return customer;
     }
