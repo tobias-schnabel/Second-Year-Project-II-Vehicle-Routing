@@ -2,6 +2,11 @@ import javax.swing.text.html.CSS;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+//SECOND YEAR PROJECT II, OR Part
+//Obbe Pulles i6250802 and Tobias Schnabel i6255807
+//FileName: Truck.java
+//Functionality: Implements the truck class
+
 public class Truck {
 
     private double currentWeight = 0;

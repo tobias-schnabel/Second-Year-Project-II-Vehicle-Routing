@@ -1,3 +1,7 @@
+//SECOND YEAR PROJECT II, OR Part
+//Obbe Pulles i6250802 and Tobias Schnabel i6255807
+//FileName: Truck.java
+//Functionality: Implements the customer class
 public class Customer {
 
     private double lat;

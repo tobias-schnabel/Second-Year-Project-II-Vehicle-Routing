@@ -1,5 +1,11 @@
 import java.util.*;
 
+//SECOND YEAR PROJECT II, OR Part
+//Obbe Pulles i6250802 and Tobias Schnabel i6255807
+//FileName: Truck.java
+//Functionality: Implements the shipment class
+//NOTE: the NB data is required in the .txt file, but we don't use it in the shipment class.
+
 public class Shipment {
     //Data has columns as follows:
     //Date | Weight | Nb | Volume | OriginCLusterLat | OriginCLusterLong | OriginLat |OriginLong

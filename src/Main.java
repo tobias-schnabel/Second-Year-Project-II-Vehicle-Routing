@@ -4,7 +4,13 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.nio.file.*;
 
-//Obbe Pulles and Tobias Schnabel
+//SECOND YEAR PROJECT II, OR Part
+//Obbe Pulles i6250802 and Tobias Schnabel i6255807
+//FileName: Main.java
+//Functionality: Reads a data.txt file of shipments, solves for the basic solution according to a nearest neighbour approach
+//               and optimizes this solution by using 2-opt-exchange and Local Search Move algorithms.
+//NOTE: we separate the dates of shipments, we don't provide 10 different .txt files, only 1.
+
 public class Main {
     static String pattern = "dd/MM/yyyy";
     static SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
@@ -21,13 +27,18 @@ public class Main {
             e.printStackTrace();
         }
 
+        //generate the list of customers
         Customer[] CustomerList = getCustomers(ShipList);
+        //verifies the correctness of the shipments and customers
         verifyInput(ShipList, CustomerList);
 
+        //generates the list of dates
         ArrayList<Date> dateList = genDateList(ShipList);
+        //creates matrix of distances between all customers and the cluster
         double[][] distanceMatrix = createDistanceMatrix(CustomerList);
 
         int counter = 1;
+        //executes the solving method which calculates the solutions and prints them in a nicely formatted way
         for (Date date : dateList) {
             System.out.println("##########################################################");
             System.out.println("Date #" + counter + ": " + simpleDateFormat.format(date) );
@@ -39,7 +50,8 @@ public class Main {
     public static void solve(double[][] dMatrix, Date date, Shipment[] SL,Customer[] CL){
         //timing
         Long st = System.currentTimeMillis();
-        //start with one truck
+
+        //cost values
         double TFC = 0; double TVC = 0;
         double FC = 450; double VC = 1.5;
 
@@ -112,7 +124,7 @@ public class Main {
        //after each improvement, check whether new improvements can be made
        while(improvement) {
            improvement = false;
-           //2-opt exchange
+           //2-opt exchange implementation
            for (Truck t : truckArrayList) {
                ArrayList<Customer> oldRoute = t.getRoute();
                do2optExchange(t);
@@ -120,7 +132,7 @@ public class Main {
                    improvement = true;
                }
            }
-
+           //Local Search move implementation
            if (truckArrayList.size() > 1) {
                for (int i = 0; i < truckArrayList.size(); i++) {
                    for (int j = 0; j < truckArrayList.size(); j++) {
@@ -149,7 +161,7 @@ public class Main {
                 count++;
             }
         }
-
+        //prints the solution
         for(Truck t: truckArrayList) {
             t.printSolution();
         }
@@ -163,8 +175,8 @@ public class Main {
         System.out.println("##########################################################" + "\n");
     }
     public static Truck[] doLocalSearchMove(Truck truck1, Truck truck2){
-        //idea is to move shipment(s) from truck 2 to truck 1
 
+        //idea is to move shipment(s) from truck 2 to truck 1 and see whether the combined route-length is shortened
         double newDistances;
         boolean foundImprovement = true;
 
@@ -227,6 +239,7 @@ public class Main {
                             revert = true;
                         }
                     }
+                    //revert the removal and addition of the customer back to the original
                     if(revert){
                         route1.remove(i);
                         route2.add(j, curr);
@@ -256,18 +269,18 @@ public class Main {
         double newDistance;
         boolean foundImprovement = true;
         ArrayList<Customer> currentRoute = t.getRoute();
-//        System.out.println("Unoptimized best distance: " + bestDistance);
+        //System.out.println("Unoptimized best distance: " + bestDistance);
 
         //until there is no more improvements
         while(foundImprovement){
             foundImprovement = false;
-            //do not change the positions of the start and end nodes
+            //do not change the positions of the start and end nodes, we start at index 1 and end before the last index
             for(int i = 1; i < t.getRoute().size()-2; i++){
                 for(int j = i+1; j < t.getRoute().size()-1; j++){
-                //currently in O(n) but can probably be done in O(1)
+                //reverses the route from index i to index j, see report for clarification
                 ArrayList<Customer> newRoute = Swap(currentRoute, i, j);
                 newDistance = getDist(newRoute);
-                //update the best distance and current route if we have found a 2-opt exhange which improves on the current route
+                //update the best distance and current route if we have found a 2-opt exchange which improves on the current route
                 if(newDistance < bestDistance){
                         bestDistance = newDistance;
                         currentRoute = newRoute;
@@ -394,7 +407,7 @@ public class Main {
             }
         }
         return dateList;
-    }
+    }//close method that generates a list of all dates in the file
 
     public static Shipment[] getInput(String filepath)
         throws java.io.FileNotFoundException {
@@ -423,7 +436,8 @@ public class Main {
                 Date Date = formatter.parse(DateString);
                 String SLC = data[1];
                 double Weight = Double.parseDouble(data[2]);
-               //double Nb = Double.parseDouble(data[3]);
+                //we don't do anything with Nb, so we leave it out.
+                //double Nb = Double.parseDouble(data[3]);
                 double Volume = Double.parseDouble(data[4]);
                 double ClusterLat = Double.parseDouble(data[5]);
                 double ClusterLong = Double.parseDouble(data[6]);
