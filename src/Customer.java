@@ -1,7 +1,7 @@
 public class Customer {
 
-    private  double lat;
-    private  double lon;
+    private double lat;
+    private double lon;
 
     private final String ID;
 
