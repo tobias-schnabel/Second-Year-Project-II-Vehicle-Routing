@@ -9,7 +9,7 @@ import java.nio.file.*;
 //FileName: Main.java
 //Functionality: Reads a data.txt file of shipments, solves for the basic solution according to a nearest neighbour approach
 //               and optimizes this solution by using 2-opt-exchange and Local Search Move algorithms.
-//NOTE: we separate the dates of shipments, we don't provide 10 different .txt files, only 1.
+//NOTE: we separate the dates of shipments in the main class, we don't provide 10 different .txt files, only 1.
 
 public class Main {
 
